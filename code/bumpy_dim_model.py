@@ -21,7 +21,7 @@ class Generator(tf.keras.Model):
 
 
         #TODO figure out args of resnet initialization, got to output right shape.
-        self.ResNet=tf.keras.applications.ResNet50V2(classes=self.num_im_feats)
+        
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         
 
@@ -47,21 +47,16 @@ class Generator(tf.keras.Model):
         reg=self.layer3(reg)
         curr_est+=reg
         return curr_est
-    def extract_features(self,img):
-        #use Resnet50 to extract image features
-        #return image features
-        #might also want to reshape images here? this function might be unnecessary.
-        features=self.ResNet.call(img)
-        return features
+    
     def init_param_est(self):
         est=[]
         #returns the initial parameter estimates. 
         return est
-    def call(self,x):
+    def call(self,features):
         #use functions previously defined to extract features, the run said features.
         #output 85 dim vector, returned by iterative regression. 
         #make sure to output in correct shape for SMPL or STAR, then to
-        features=self.extract_features(x)
+        
         curr_est=self.init_param_est()
         for i in range(self.num_iterations):
             curr_est=self.IEF(features,curr_est)
@@ -80,14 +75,59 @@ class Discriminator(tf.keras.Model):
         This model will contain code for the Discriminator
         """
         super(Discriminator, self).__init__()
+        self.poseMatrixShape=[3,3]
+        self.learning_rate=1e-3
+        self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
+        #ShapeDiscriminator
+        self.shapeD1=tf.keras.layers.Dense(10,activation='relu')
+        self.shapeD2=tf.keras.layers.Dense(5,activation='relu')
+        self.shapeOut=tf.keras.layers.Dense(1,activation='softmax')
+
+        #the pose embedding network, common to all pose discriminators.
+        #this needs to be changed, to convolution because inputs are matices
+        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape)
+        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape)
+        #self.pe1=tf.keras.layers.Dense(32,activation='relu')
+        #self.pe2=tf.keras.layers.Dense(32,activation='relu')
+
+        #individual joint discriminators
+        temp=[]
+        for i in range(self.num_joints):
+            temp.append(tf.keras.layers.Dense(1,activation='softmax'))
+        self.jointDiscList=temp
 
 
+        #ovarallPoseDiscriminator
+        self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
+        self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
+        self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
-    def call(self,x):
+    def call(self,poses,shape):
         # this will run the SMPL or STAR parameters through the discriminator network
         #and  output a probability. Returns two values, pose discriminator out and 
         # shape discriminator out.
+        shapeDisc=self.shapeD1(shape)
+        shapeDisc=self.shapeD2(shapeDisc)
+        shapeDisc=self.shapeOut(shapeDisc)
+
+        poseEmb=self.pE1(poses)
+        poseEmb=self.pE2(poseEmb)
+        for i in range(self.num_joints):
+            """this part is confusing..
+            Their code indexes into poseEmb like poseEmb[:,i,:,:],
+            I'm guessing because of the shape of the output of the convolution 
+            Checking on the output shape of pE2 would help fix this issue.
+            
+            
+            What needs to be done i nthis loop is running the poseEmb of each joint
+            through the discriminator of each joint, then making that into a tensor. 
+            The authors code will offer tips for gettign the shape of 
+            inputs and output right. 
+            """
+        """ONce we have a tensor containing the disc output of each joint,
+        we can concatenate the disc outptus (K*32 in total) and input this to the 
+        overall pose discriminator"""
         pass
 
     def loss(self,x,y,z):
