@@ -13,7 +13,7 @@ class Generator(tf.keras.Model):
         super(Generator, self).__init__()
         #TODO Initialize Hyperparameters, linear layers, etc
         self.learning_rate=1e-5
-        self.num_im_feats=2048
+       
         self.hidden_size=1024
         self.out_size=85
         self.dropout_rate=.5 #figure out what dropout rate to use. fine tuning?
@@ -62,12 +62,7 @@ class Generator(tf.keras.Model):
             curr_est=self.IEF(features,curr_est)
         
         return curr_est
-    def loss(self,x,y,z):
-        #this loss will not be the total loss, which depends on the discriminator
-        #This loss will only be the reprojections loss (maybe)
-        #This function might not need to exist, the structure of this class can change depending
-        #on What we want, and how we want to do it. 
-        pass 
+    
 
 class Discriminator(tf.keras.Model):
     def __init__(self):
@@ -85,8 +80,8 @@ class Discriminator(tf.keras.Model):
 
         #the pose embedding network, common to all pose discriminators.
         #this needs to be changed, to convolution because inputs are matices
-        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape)
-        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape)
+        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format='NHWC')
+        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format='NHWC')
         #self.pe1=tf.keras.layers.Dense(32,activation='relu')
         #self.pe2=tf.keras.layers.Dense(32,activation='relu')
 
@@ -107,32 +102,26 @@ class Discriminator(tf.keras.Model):
         # this will run the SMPL or STAR parameters through the discriminator network
         #and  output a probability. Returns two values, pose discriminator out and 
         # shape discriminator out.
+        """pose: Nx23x1x9
+        shape: 
+        
+        """
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
 
         poseEmb=self.pE1(poses)
         poseEmb=self.pE2(poseEmb)
+        poseDisc=[]
         for i in range(self.num_joints):
-            """this part is confusing..
-            Their code indexes into poseEmb like poseEmb[:,i,:,:],
-            I'm guessing because of the shape of the output of the convolution 
-            Checking on the output shape of pE2 would help fix this issue.
-            
-            
-            What needs to be done i nthis loop is running the poseEmb of each joint
-            through the discriminator of each joint, then making that into a tensor. 
-            The authors code will offer tips for gettign the shape of 
-            inputs and output right. 
-            """
+            poseDisc.append(self.jointDiscList[i](poseEmb[:,i,:,:]))
+        poseDisc=tf.squeeze(tf.stack(poseDisc,axis=1))
+        allPoseDisc=self.poseD1(poseEmb)
+        allPoseDisc=self.poseD2(allPoseDisc)
+        allPoseDisc=self.poseD3(allPoseDisc)
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) and input this to the 
         overall pose discriminator"""
-        pass
-
-    def loss(self,x,y,z):
-        #TODO calculate loss, figure out what is input to loss function
-        # for now, inputs are the generated SMPL/STAR params, and the real mesh params from unpaired dataset.
-
-        pass 
-
+        discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
+        return discs
+   
