@@ -16,6 +16,6 @@ def get_lsp(data_path):
   
   annotations = join(data_path, 'joints.mat')
   joints = sio.loadmat(annotations)['joints']
-  
+  return joints 
   
                          
