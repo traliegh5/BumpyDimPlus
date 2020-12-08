@@ -93,6 +93,7 @@ class Discriminator(tf.keras.Model):
 
 
         #ovarallPoseDiscriminator
+        self.flatten=tf.keras.layers.Flatten(data_formta='NHWC')
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
         self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
@@ -116,12 +117,13 @@ class Discriminator(tf.keras.Model):
         for i in range(self.num_joints):
             poseDisc.append(self.jointDiscList[i](poseEmb[:,i,:,:]))
         poseDisc=tf.squeeze(tf.stack(poseDisc,axis=1))
+        poseEmb=self.flatten(poseEmb)
         allPoseDisc=self.poseD1(poseEmb)
         allPoseDisc=self.poseD2(allPoseDisc)
         allPoseDisc=self.poseD3(allPoseDisc)
         """ONce we have a tensor containing the disc output of each joint,
-        we can concatenate the disc outptus (K*32 in total) and input this to the 
-        overall pose discriminator"""
+        we can concatenate the disc outptus (K*32 in total) """
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
+        #Discs shape: Nx(23+1+1)
         return discs
    
