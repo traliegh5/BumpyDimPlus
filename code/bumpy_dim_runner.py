@@ -62,7 +62,31 @@ def texture_loss():
     """
     
     return None 
-def train(discriminator,generator,imageBatch,labelBatch):
+def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
+    feats=resNet(imageBatch)
+    with tf.GradientTape() as tape:
+        params=generator(feats)
+        keypoints=[params]
+        #keypoints=SOMETHING
+        realDisc=discriminator(meshBatch)
+        fakeDisc=discriminator(keypoints)
+        advLossGen=genLoss(fakeDisc)
+        advLossDisc=discLoss(realDisc,fakeDisc)
+        repLoss=reprojLoss(labelBatch,keypoints)
+
+        # make texture maps from meshes(from keypoints) 
+        # make visibility mask 
+        # input maps and mask into texture loss function
+        texLoss=texture_loss()
+
+        totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+        totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+    gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
+    gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
+    generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
+    discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
    
-    pass
+   
+   
+    return None 
  
