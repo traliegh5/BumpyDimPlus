@@ -55,6 +55,7 @@ def genLoss(disFake):
 
     
     return fakeLoss
+
 def texture_loss():
     """map function is in utilities, necessary for making texture maps. We can have this take in a batch of images,
     and have one batch be comprised of images that have consistant texture (ie videos or consecutive images)
@@ -62,6 +63,7 @@ def texture_loss():
     """
     
     return None 
+
 def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
     feats=resNet(imageBatch)
     with tf.GradientTape() as tape:
