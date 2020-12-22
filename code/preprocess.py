@@ -5,6 +5,28 @@ import random
 import math
 import glob
 
+'''
+data pipelining based on "Scaling Deep Learning Systems" lecture ???
+'''
+
+'''
+# Creates Dataset
+directory_path = None
+
+# Maps file contents => tensor
+dataset = dataset.map(map_func=None)
+
+# Loads data in batches
+dataset = dataset.batch(batch_size)
+
+# Prefetch next batch while GPU trains
+dataset = dataset.prefetch(1)
+
+# Iterate over dataset
+for i, batch in enumerate(dataset)
+    # process here!
+'''
+
 def get_data(filepath, otherparams):
     "get_data method to be used to return training and testing data"
    
