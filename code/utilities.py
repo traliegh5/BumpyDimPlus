@@ -23,10 +23,22 @@ def map(meshes):
     #step3: output texture map
 
     pass
-def orth_project(params):
-    app=None
-    scale=params[-1]
-    pose=params[:24]
+
+
+
+def orth_project(PointBatch,camera):
+    """
+    These are the indices for extracting info straight from params
+    cam=params[:,:3]
+    pose=params[:,3:72]
+    shape=params[:,75:]
+    """
+    camera=tf.reshape(camera,[-1,1,3])
+    transPoints=PointBatch[:,:,:2]+camera[:,:,1:]
+    scaledPoints=transPoints*camera[:,:,0]
+
+    #then reshape points? not sure why
+
 
 
     return app
