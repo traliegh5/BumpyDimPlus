@@ -36,11 +36,11 @@ def orth_project(PointBatch,camera):
     camera=tf.reshape(camera,[-1,1,3])
     transPoints=PointBatch[:,:,:2]+camera[:,:,1:]
     scaledPoints=transPoints*camera[:,:,0]
+    
+   
 
-    #then reshape points? not sure why
 
 
-
-    return app
+    return scaledPoints
 
 
