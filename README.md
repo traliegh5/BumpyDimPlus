@@ -1,6 +1,6 @@
 # BumpyDimPlus
 
-Citations:  
+##### Citations:  
 
 STAR Model. 
 @inproceedings{STAR:2020,  
@@ -32,7 +32,7 @@ article{Loper:SIGASIA:2014,
   month_numeric = {11} 
 }
 
-MPII Dataset
+MPII Dataset  
 @inproceedings{andriluka14cvpr,  
                author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}  
                title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},  
