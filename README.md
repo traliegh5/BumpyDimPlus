@@ -2,7 +2,7 @@
 
 ## Citations:  
 
-## STAR Model    
+##### STAR Model    
 @inproceedings{STAR:2020,  
      author = {Osman, Ahmed A A and Bolkart, Timo and Black, Michael J.},  
       title = {{STAR}: A Spare Trained Articulated Human Body Regressor},  
@@ -32,7 +32,7 @@ article{Loper:SIGASIA:2014,
   month_numeric = {11} 
 }
 
-## MPII Dataset  
+##### MPII Dataset  
 @inproceedings{andriluka14cvpr,  
                author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}  
                title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},  
@@ -40,5 +40,14 @@ article{Loper:SIGASIA:2014,
                year = {2014},  
                month = {June}  
 } 
+
+##### Human3.6M Dataset
+@article{h36m_pami,
+author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
+title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},
+journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+publisher = {IEEE Computer Society},
+year = {2014}
+}
 
 
