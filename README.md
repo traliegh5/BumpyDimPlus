@@ -4,7 +4,7 @@
 
 STAR Model    
 @inproceedings{STAR:2020,  
-      author = {Osman, Ahmed A A and Bolkart, Timo and Black, Michael J.},  
+(      )author = {Osman, Ahmed A A and Bolkart, Timo and Black, Michael J.},  
       title = {{STAR}: A Spare Trained Articulated Human Body Regressor},  
       booktitle = {European Conference on Computer Vision (ECCV)},  
       year = {2020},  
