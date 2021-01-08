@@ -17,12 +17,12 @@ End to End Human Pose Estimation Implementation (We impelment our own, using thi
 
 We Used MOSH data from this dataset: https://github.com/akanazawa/hmr/blob/master/doc/train.md
 
-article{Loper:SIGASIA:2014,  
-  title = {{MoSh}: Motion and Shape Capture from Sparse Markers},  
-  author = {Loper, Matthew M. and Mahmood, Naureen and Black, Michael J.},  
-  journal = {ACM Transactions on Graphics, (Proc. SIGGRAPH Asia)},  
-  volume = {33},  
-  number = {6},  
+article{Loper:SIGASIA:2014,    
+  title = {{MoSh}: Motion and Shape Capture from Sparse Markers},    
+  author = {Loper, Matthew M. and Mahmood, Naureen and Black, Michael J.},    
+  journal = {ACM Transactions on Graphics, (Proc. SIGGRAPH Asia)},    
+  volume = {33},    
+  number = {6},    
   pages = {220:1--220:13},  
   publisher = {ACM},  
   address = {New York, NY, USA},  
@@ -42,12 +42,12 @@ article{Loper:SIGASIA:2014,
 } 
 
 ##### Human3.6M Dataset
-@article{h36m_pami,
-author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
-title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},
-journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
-publisher = {IEEE Computer Society},
-year = {2014}
+@article{h36m_pami,  
+author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},  
+title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},  
+journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},  
+publisher = {IEEE Computer Society},  
+year = {2014}    
 }
 
 
