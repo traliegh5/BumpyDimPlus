@@ -3,11 +3,10 @@ import tensorflow as tf
 import numpy as np
 import random
 import math
+from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-"""the doc where we will run all of this. we can use the 
-main func to do this. I think that we can use functions outside
-of the model to calculate losses. The structure of this is not
-set in stone, I'm just getting the ball rolling. """
+
+
 num_im_feats=2048
 resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
 generator=Generator()
@@ -22,12 +21,10 @@ def reprojLoss(keys,predKeys):
     dif=tf.math.subtract(keys[:,:2],predKeys)
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    """not sure what else needs to be done in this function. First i reshape the keys and predKeys, then i compute a visibility
-    mask using the 3rd element in the 3rd dimmension of keys, then I compute keypoint loss, masking this with visibility.
-    The shape of this might not be right... this doesnt return a scalar, but I dont want to edit it yet. We should probably reduce sum.
-    """
+    finloss=tf.reduce_sum(maskAbsDif)
+   
     
-    return maskAbsDif
+    return finloss
 
 #
 def discLoss(disReal,disFake):
@@ -64,14 +61,26 @@ def texture_loss():
     
     return None 
 
-def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
+def train(discriminator,generator,star,imageBatch,labelBatch,meshBatch):
     feats=resNet(imageBatch)
     with tf.GradientTape() as tape:
         params=generator(feats)
-        keypoints=[params]
-        #keypoints=SOMETHING
-        realDisc=discriminator(meshBatch)
-        fakeDisc=discriminator(keypoints)
+        pose=params[:,3:72]
+        shape=params[:,75:]
+        camera=params[:,:3]
+        #INVESTIGATE inputs outputs of star. in particular, check camera. 
+        joints=star(pose,shape,camera).Jtr
+        J_lsp=lsp_STAR(joints)
+        keypoints=orth_project(J_lsp)
+
+
+
+        #19joints=reduceJoints(joints)
+        #keypoints=project(19joints,camera)
+         
+        """Here, the discriminator takes in (pose,shape) as the parameters, and not just a singe param."""
+        realDisc=discriminator(meshBatch[0],meshBatch[1])
+        fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
         repLoss=reprojLoss(labelBatch,keypoints)
@@ -92,3 +101,6 @@ def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
    
     return None 
  
+def main():
+    
+    return None
