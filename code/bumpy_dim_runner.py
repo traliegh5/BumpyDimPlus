@@ -5,6 +5,8 @@ import random
 import math
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
+from .STAR.tf.star import STAR,tf_rodrigues
+
 
 
 num_im_feats=2048
@@ -79,7 +81,14 @@ def train(discriminator,generator,star,imageBatch,labelBatch,meshBatch):
         #keypoints=project(19joints,camera)
          
         """Here, the discriminator takes in (pose,shape) as the parameters, and not just a singe param."""
-        realDisc=discriminator(meshBatch[0],meshBatch[1])
+        #These two reals coem from meshBatch How this gets indexed into depends on the Prior Data shape. 
+        #note: going from Prior data to realPose involves using star's rodrigues formula. 
+
+        #assuming meshBatch is the same shape as the params...
+
+        realShape=meshBatch[:,75:]
+        realPose=tf_rodrigues(meshBatch[:,3:72])
+        realDisc=discriminator(realShape,realPose)
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
@@ -102,5 +111,9 @@ def train(discriminator,generator,star,imageBatch,labelBatch,meshBatch):
     return None 
  
 def main():
-    
+    #todo: initilize models with batch size params
+    #load data,
+    #for loops for training batches and for  training epochs. 
+    #
+    #  bookkeeping things, like put in loss printlines 
     return None

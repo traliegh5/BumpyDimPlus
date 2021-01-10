@@ -18,7 +18,8 @@ class Generator(tf.keras.Model):
         self.out_size=85
         self.dropout_rate=.5 #figure out what dropout rate to use. fine tuning?
         self.num_iterations=3
-
+        self.SMPLnum=0
+        self.batch_size=10
 
         #TODO figure out args of resnet initialization, got to output right shape.
         
@@ -49,9 +50,14 @@ class Generator(tf.keras.Model):
         return curr_est
     
     def init_param_est(self):
-        est=[]
+        est=tf.zeros((1,self.SMPLnum))
+        #initial scale is 0.9
+        est[0,0]=0.9
+        #The rest of the initializations are gotten from SMPL data, which needs to be figured out. 
         #returns the initial parameter estimates. 
-        return est
+        self.est_best=tf.Variable(est)
+        init_est=tf.tile(self.est_best,[self.batch_size,1]) 
+        return init_est
     def call(self,features):
         #use functions previously defined to extract features, the run said features.
         #output 85 dim vector, returned by iterative regression. 
@@ -72,6 +78,7 @@ class Discriminator(tf.keras.Model):
         super(Discriminator, self).__init__()
         self.poseMatrixShape=[3,3]
         self.learning_rate=1e-3
+        self.batch_size=10
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         #ShapeDiscriminator
         self.shapeD1=tf.keras.layers.Dense(10,activation='relu')
