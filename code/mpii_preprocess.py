@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import glob
 import time
+import sys
 
 from os.path import join
 
@@ -36,21 +37,89 @@ im_size = 224
 
 tic = time.perf_counter()
 
-data_directory = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/"
+# data_directory = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/"
 
-jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/joints.mat"
+# jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/joints.mat"
 
 '''MPII''' 
 
-# data_directory = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/"
+data_directory = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/"
 
-# jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/mpii_human_pose_v1_u12_2/mpii_human_pose_v1_u12_1.mat"
+jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/mpii_human_pose_v1_u12_2/mpii_human_pose_v1_u12_1.mat"
 
 images = sorted([i for i in glob.glob(join(data_directory, 'images/2/*.jpg'))])
 
-joints = sio.loadmat(jts)['joints']
-
 index = 19
+
+annots = sio.loadmat(jts, struct_as_record=False, squeeze_me=True)['RELEASE']
+
+# annots = sio.loadmat(jts, struct_as_record=True, squeeze_me=True)['RELEASE']
+
+# convert to LSP joints
+
+'''
+MPII: 
+0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee, 5 - l ankle, 6 - pelvis, 
+7 - thorax, 8 - upper neck, 9 - head top, 10 - r wrist, 10 - r wrist, 12 - r shoulder, 
+13 - l shoulder, 14 - l elbow, 15 - l wrist)" - `is_visible` - joint visibility
+'''
+
+### which 10 is actually wrist ???
+
+'''
+LSP:
+Right ankle, Right knee, Right hip, Left hip, Left knee, Left ankle,
+Right wrist, Right elbow, Right shoulder, Left shoulder, Left elbow,
+Left wrist, Neck, Head top
+'''
+
+# mpii_to_lsp = [0,1,2,3,4,5,10,11,12,13,14,15,8,9]
+
+
+# change to desired length
+
+# anno_mat = join(data_directory, 'annotations',
+#                     'mpii_human_pose_v1_u12_1.mat')
+
+# print(anno_mat)
+
+# for i in range(10):
+#     r_id = annots[3]
+#     print(r_id)
+
+print(np.shape(annots))
+print(annots)
+
+img_ids = np.array(range(len(annots.annolist)))
+
+anno_list = annots.annolist[5]
+print(anno_list)
+
+person_id = annots.single_person[5]
+print(person_id)
+
+first_p_id = person_id
+
+f_a = anno_list.annorect
+print(f_a)
+
+p = f_a.objpos.x
+print(p)
+
+f_a_j = f_a.annopoints.point
+print(f_a_j)
+
+sys.exit()
+
+
+r_id = annots[3]
+
+print(r_id)
+
+
+# print(annots)
+
+
 
 for i in images:
 
@@ -171,21 +240,4 @@ for i in images:
 
 toc = time.perf_counter()
 
-'''
-1. Getting new joint coordinates
-      translate current 
-      (0,0) -> (bbox_min_x, bbox_min_y)
-      add v. subtract?
-2. Scaling (entire image)
-      matplot function
-      rescale joints
-3. Edge case cropping operation
-      if bbox extremes are outside image:
-        fill in with zeros ?
-4. Run!
-      a. 100 images
-            big problems? y/n
-      b. everything!
-5. Extend to MPII
-'''
 
