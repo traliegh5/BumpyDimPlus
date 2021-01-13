@@ -47,6 +47,18 @@ article{Loper:SIGASIA:2014,
   month = {June}  
 } 
 ```
+## TensorLayer
+We used this TensorLayer function to load in the MPII data: https://tensorlayer.readthedocs.io/en/latest/_modules/tensorlayer/files/dataset_loaders/mpii_dataset.html
+```
+@article{tensorlayer2017,
+    author  = {Dong, Hao and Supratak, Akara and Mai, Luo and Liu, Fangde and Oehmichen, Axel and Yu, Simiao and Guo, Yike},
+    journal = {ACM Multimedia},
+    title   = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},
+    url     = {http://tensorlayer.org},
+    year    = {2017}
+}
+```
+
 ## Human3.6M Dataset
 ```
 @article{h36m_pami,  
