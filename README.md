@@ -2,7 +2,7 @@
 
 ## Citations:  
 
-##### STAR Model
+## STAR Model
 
 ```
 @inproceedings{STAR:2020,  
@@ -37,7 +37,7 @@ article{Loper:SIGASIA:2014,
 }
 ```
 
-##### MPII Dataset  
+## MPII Dataset  
 ```
 @inproceedings{andriluka14cvpr,  
   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt},
@@ -47,7 +47,7 @@ article{Loper:SIGASIA:2014,
   month = {June}  
 } 
 ```
-##### Human3.6M Dataset
+## Human3.6M Dataset
 ```
 @article{h36m_pami,  
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},  
