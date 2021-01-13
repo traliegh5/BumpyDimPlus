@@ -2,7 +2,9 @@
 
 ## Citations:  
 
-##### STAR Model    
+##### STAR Model
+
+```
 @inproceedings{STAR:2020,  
      author = {Osman, Ahmed A A and Bolkart, Timo and Black, Michael J.},  
       title = {{STAR}: A Spare Trained Articulated Human Body Regressor},  
@@ -10,6 +12,7 @@
       year = {2020},  
       url = {https://star.is.tue.mpg.de} 
 }      
+```
 
 Github for TF Implementation: https://github.com/ahmedosman/STAR/tree/45c9dce61c000cf777e779592729c570fef0c8fe
 
@@ -17,6 +20,7 @@ End to End Human Pose Estimation Implementation (We impelment our own, using thi
 
 We Used MOSH data from this dataset: https://github.com/akanazawa/hmr/blob/master/doc/train.md
 
+```
 article{Loper:SIGASIA:2014,    
   title = {{MoSh}: Motion and Shape Capture from Sparse Markers},    
   author = {Loper, Matthew M. and Mahmood, Naureen and Black, Michael J.},    
@@ -31,8 +35,10 @@ article{Loper:SIGASIA:2014,
   url = {http://doi.acm.org/10.1145/2661229.2661273},  
   month_numeric = {11} 
 }
+```
 
 ##### MPII Dataset  
+```
 @inproceedings{andriluka14cvpr,  
                author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}  
                title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},  
@@ -40,8 +46,9 @@ article{Loper:SIGASIA:2014,
                year = {2014},  
                month = {June}  
 } 
-
+```
 ##### Human3.6M Dataset
+```
 @article{h36m_pami,  
 author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},  
 title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},  
@@ -49,5 +56,5 @@ journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
 publisher = {IEEE Computer Society},  
 year = {2014}    
 }
-
+```
 
