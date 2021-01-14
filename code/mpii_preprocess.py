@@ -20,27 +20,29 @@ img_train_list, ann_train_list, img_test_list, ann_test_list = tl.files.load_mpi
 # print('img_train_list', img_train_list[0])
 # print('ann_test_list:', len(ann_train_list))
 
-pad = 100
+pad = 500
 bbox_pad = 40
 im_size = 224
 
+np.set_printoptions(suppress=True)
+
 start = time.time()
 
-# '''
-# MPII: 
-# 0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee, 5 - l ankle, 6 - pelvis, 
-# 7 - thorax, 8 - upper neck, 9 - head top, 10 - r wrist, 10 - r wrist, 12 - r shoulder, 
-# 13 - l shoulder, 14 - l elbow, 15 - l wrist)" - `is_visible` - joint visibility
-# '''
+'''
+MPII: 
+0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee, 5 - l ankle, 6 - pelvis, 
+7 - thorax, 8 - upper neck, 9 - head top, 10 - r wrist, 10 - r wrist, 12 - r shoulder, 
+13 - l shoulder, 14 - l elbow, 15 - l wrist)" - `is_visible` - joint visibility
+'''
 
-# ### which 10 is actually wrist ???
+# 10 is actually wrist, 11 is elbow
 
-# '''
-# LSP:
-# Right ankle, Right knee, Right hip, Left hip, Left knee, Left ankle,
-# Right wrist, Right elbow, Right shoulder, Left shoulder, Left elbow,
-# Left wrist, Neck, Head top
-# '''
+'''
+LSP:
+Right ankle, Right knee, Right hip, Left hip, Left knee, Left ankle,
+Right wrist, Right elbow, Right shoulder, Left shoulder, Left elbow,
+Left wrist, Neck, Head top
+'''
 
 lsp_to_mpii = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 10, 7: 11, 8: 12, 9: 13,
     10: 14, 11: 15, 12: 8, 13: 9}
@@ -49,395 +51,179 @@ mpii_to_lsp = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 8: 12, 9: 13, 10: 6, 11: 7,
     12: 8, 13: 9, 14: 10, 15: 11}
 
 num_joints = 14
-slice = ann_train_list[350:360]
+# slice = ann_train_list[5600:5610]
+slice = ann_train_list[:]
 num_images = len(slice)
 
-# print(slice)
-
 joints = []
-
 joints_index = 0
+no_joints = []
+joints_vis = []
 
-for i in slice:
-
-    print(i)
-    print('i[0]:', i[0])
-
-    print('joint_pos:', i[0]['joint_pos'])
-    print('vis:', i[0]['is_visible'])
+for i in range(num_images):
 
     # print(i)
 
-    i_joints = np.zeros((num_joints, 3))
-    # print(joints)
+    if slice[i] != []:
 
-    # for j in range(num_joints):
-    #     if j in i[0]['joint_pos']:
-    #         x, y = i[0]['joint_pos'][j]
-    #         vis = i[0]['is_visible'][str(j)]
-    #         if j in mpii_to_lsp:
-    #             joints[mpii_to_lsp[j]] = np.array([x, y, vis])
+        vis_joints_count = 0
+        i = slice[i]
 
-    print(joints)
+        # print('i[0]:', i[0])
 
-    for j in range(num_joints):
-        if lsp_to_mpii[j] in i[0]['joint_pos']:
-            x, y = i[0]['joint_pos'][lsp_to_mpii[j]]
-            vis = i[0]['is_visible'][str(lsp_to_mpii[j])]
-            i_joints[j] = np.array([x, y, vis])
-            # print(j)
-            # print(lsp_to_mpii[j])
-            # print(i_joints[j])
+        # print('joint_pos:', i[0]['joint_pos'])
+        # print('vis:', i[0]['is_visible'])
+
+        i_joints = np.zeros((num_joints, 3))
+
+        for j in range(num_joints):
+            if lsp_to_mpii[j] in i[0]['joint_pos']:
+                x, y = i[0]['joint_pos'][lsp_to_mpii[j]]
+                vis = i[0]['is_visible'][str(lsp_to_mpii[j])]
+                if vis == 1:
+                    vis_joints_count += 1
+                i_joints[j] = np.array([x, y, vis])
+        joints.append(i_joints)
+        joints_vis.append(vis_joints_count)
+
+    elif slice[i] == []:
+        no_joints.append(i)
+
+# print(no_joints)
+# print('joints:', joints)
+# # print(joints_vis)
+print(np.shape(joints))
+print(joints)
+
+joints = np.reshape(joints, (num_joints, 3))
+
+print(np.shape(joints))
+print(joints)
+# # print(np.shape(joints_vis))
 
 
-    # print(i_joints)
-
-    joints.append(i_joints)
-    # joints_index += 1
-
-# tf.convert_to_tensor(joints)
-
-# print(tf.shape(joints))
-
-# print(joints)
-
-# tf.reshape(joints, [num_joints, 3, num_images])
-
-# print(tf.shape(joints))
-
-# print(joints)
+# img_slice = img_train_list[5600:5610]
+img_slice = img_train_list[:]
 
 
 index = 0
 
-for i in img_train_list[350:360]:
+for i in range(num_images):
 
+    if i in no_joints or joints_vis[index] < 5:
+        pass
 
-# i = img_train_list[11]
+    else:
+        img = img_slice[i]
+        img = mpimg.imread(img)
+        img = np.array(img)
+        padded_img = np.pad(img, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
+        imgplot = plt.imshow(padded_img)
 
-    img = i
-    img = mpimg.imread(img)
-    img = np.array(img)
-    # print(np.shape(img))
-    padded_img = np.pad(img, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
-    # print(np.shape(padded_img))
-    imgplot = plt.imshow(padded_img)
+        # print(joints)
+        # print(np.shape(joints))
 
-    # print(joints)
-    # print(np.shape(joints))
+        ex_all = joints[index]
 
-    ex_all = joints[index]
+        # np.reshape(ex_all, (num_joints, 3))
 
-    np.reshape(ex_all, (num_joints, 3))
+        print(ex_all)
 
-    # print(ex_all)
+        # if joints_vis[index] > 4:
+        ex = ex_all[ex_all[:,2]>0]
+        ex = np.vstack((ex, ex_all[13]))
+        ex += pad
 
+        # else:
+        #     ex = ex_all
 
-    # ex = ex_all
+        # print(ex)
 
-    ex = ex_all[ex_all[:,2]>0]
+        x1, y1 = ex[:,0], ex[:,1]
 
-    print(ex_all[13])
+        # print('x1:', x1)
+        # print('y1:', y1)
 
-    ex = np.vstack((ex, ex_all[13]))
+        min_x, min_y = np.amin(x1), np.amin(y1)
+        max_x, max_y = np.amax(x1), np.amax(y1)
 
-    print(ex)
+        # print('max_x:', max_x)
+        # print('max_y:', max_y)
 
-    ex += pad
+        # print('min_x:', min_x)
+        # print('min_y:', min_y)  
 
-    print(ex)
+        bbox_w = max_x - min_x
+        bbox_h = max_y - min_y
 
-    #print(np.shape(ex))
+        # print('bbox_w:', bbox_w)
+        # print('bbox_h:', bbox_h)
 
-    # x1, y1 = ex[:,0], ex[:,1]
+        bbox_cx, bbox_cy = max_x - bbox_w/2, max_y - bbox_h/2
 
-    x1, y1 = ex[:,0], ex[:,1]
+        # print('bbox_cx:', bbox_cx)
+        # print('bbox_cy:', bbox_cy)
 
-    print('x1:', x1)
-    print('y1:', y1)
+        side_length = np.max([bbox_w, bbox_h])
 
+        bbox_min_x, bbox_min_y = int(np.floor(bbox_cx - side_length/2)), int(np.floor(bbox_cy - side_length/2))
+        bbox_max_x, bbox_max_y = int(np.ceil(bbox_cx + side_length/2)), int(np.ceil(bbox_cy + side_length/2))
 
-    min_x, min_y = np.amin(x1), np.amin(y1)
-    max_x, max_y = np.amax(x1), np.amax(y1)
+        if bbox_max_x - bbox_min_x > bbox_max_y - bbox_min_y:
+            bbox_max_y += 1
 
-    print('max_x:', max_x)
-    print('max_y:', max_y)
+        if bbox_max_x - bbox_min_x < bbox_max_y - bbox_min_y:
+            bbox_max_x += 1
 
-    print('min_x:', min_x)
-    print('min_y:', min_y)  
+        bbox_min_x -= bbox_pad
+        bbox_min_y -= bbox_pad
 
-    bbox_w = max_x - min_x
-    bbox_h = max_y - min_y
+        bbox_max_x += bbox_pad
+        bbox_max_y += bbox_pad
 
-    print('bbox_w:', bbox_w)
-    print('bbox_h:', bbox_h)
+        padded_img = padded_img[bbox_min_y:bbox_max_y, bbox_min_x:bbox_max_x]
 
-    bbox_cx, bbox_cy = max_x - bbox_w/2, max_y - bbox_h/2
+        # print(np.shape(padded_img))
 
-    print('bbox_cx:', bbox_cx)
-    print('bbox_cy:', bbox_cy)
+        # plt.scatter(bbox_cx, bbox_cy, c='lime')
+        # plt.scatter(x1, y1, c='gold')
+        # plt.scatter(min_x, min_y, c='fuchsia')
+        # plt.scatter(max_x, max_y, c='fuchsia')
+        # plt.scatter(bbox_min_x, bbox_min_y, c='aquamarine')
+        # plt.scatter(bbox_max_x, bbox_max_y, c='aquamarine')
 
-    side_length = np.max([bbox_w, bbox_h])
+        jt = np.array(joints)
 
-    # print(side_length)
+        # plt.show()
+        # plt.clf()
 
-    bbox_min_x, bbox_min_y = int(np.floor(bbox_cx - side_length/2)), int(np.floor(bbox_cy - side_length/2))
-    bbox_max_x, bbox_max_y = int(np.ceil(bbox_cx + side_length/2)), int(np.ceil(bbox_cy + side_length/2))
+        side_length = np.shape(padded_img)[0]
+        padded_img = cv2.resize(padded_img, (224, 224))
+        scale_factor = float(224.0/side_length)
 
-    if bbox_max_x - bbox_min_x > bbox_max_y - bbox_min_y:
-        
-        bbox_max_y += 1
+        # print(scale_factor)
 
-    if bbox_max_x - bbox_min_x < bbox_max_y - bbox_min_y:
-        
-        bbox_max_x += 1
+        # imgplot = plt.imshow(padded_img)
 
-    bbox_min_x -= bbox_pad
-    bbox_min_y -= bbox_pad
+        x1 -= bbox_min_x 
+        y1 -= bbox_min_y
 
-    bbox_max_x += bbox_pad
-    bbox_max_y += bbox_pad
+        x1 = x1 * scale_factor
+        y1 = y1 * scale_factor
 
-    padded_img = padded_img[bbox_min_y:bbox_max_y, bbox_min_x:bbox_max_x]
+        # plt.scatter(x1, y1)
+        # plt.show()
 
-    print(np.shape(padded_img))
+        index += 1
 
-    plt.scatter(bbox_cx, bbox_cy, c='lime')
+# # file = open("joints.txt", "w+")
 
-    plt.scatter(x1, y1, c='gold')
+# # Save joints in text file 
+# np.savetxt("joints.txt", joints)
 
-    plt.scatter(min_x, min_y, c='fuchsia')
-
-    plt.scatter(max_x, max_y, c='fuchsia')
-
-    plt.scatter(bbox_min_x, bbox_min_y, c='aquamarine')
-
-    plt.scatter(bbox_max_x, bbox_max_y, c='aquamarine')
-
-
-    jt = np.array(joints)
-
-    plt.show()
-
-    plt.clf()
-
-    side_length = np.shape(padded_img)[0]
-
-    padded_img = cv2.resize(padded_img, (224, 224))
-
-    scale_factor = float(224.0/side_length)
-
-    print(scale_factor)
-
-    # print(np.shape(img))
-
-    imgplot = plt.imshow(padded_img)
-
-    x1 -= bbox_min_x 
-    y1 -= bbox_min_y
-
-    x1 = x1 * scale_factor
-    y1 = y1 * scale_factor
-
-    plt.scatter(x1, y1)
-
-    plt.show()
-
-    index += 1
-
-
-    '''
-    The fallen
-    '''
-        
-    # plt.show()
-
-    # # mpii_to_lsp = [0,1,2,3,4,5,10,11,12,13,14,15,8,9]
-
-
-        
-
-    # potenitally loop if multiple individuals
-    # for p in i[]
-
-
+# # Displaying the contents of the text file 
+# content = np.loadtxt('joints.txt') 
+# print("\nContent in joints.txt:\n", content) 
 
 end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
-
-
-
-
-
-
-
-
-
-# # grab annotations (1 for now, num_imgs later)
-# for i in range(1):
-#     anno_list = annots.annolist[i]
-#     people = annots.single_person
-#     joints = anno_list.annorect
-#     if not isinstance(joints, np.ndarray):
-#         joints = np.array([joints])
-
-#     print(joints)
-#     print(anno_list.annorect)
-
-#     for p in range(len(people)):
-#         person_id = annots.single_person[p]
-#         print(person_id)
-
-#         # print(joints[person_id - 1])
-
-#         joint = joints[0][person_id-1]
-
-#         print(joint)
-#         assert ('annopoints' in joint._fieldnames)
-
-#         person_annots = joints[person_id-1].annopoints.point
-
-#         # person_annots = joints[person_id - 1]
-
-
-
-
-
-
-# # p = f_a.objpos.x
-# # print(p)
-
-# # f_a_j = ri.annopoints.point
-# # print(f_a_j)
-
-# sys.exit()
-
-
-# r_id = annots[3]
-
-# print(r_id)
-
-
-# # print(annots)
-
-
-
-# for i in images:
-
-#       img = i
-
-#       img = mpimg.imread(img)
-
-#       img = np.array(img)
-
-#       print(np.shape(img))
-
-#       padded_img = np.pad(img, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
-
-#       print(np.shape(padded_img))
-
-#       imgplot = plt.imshow(padded_img)
-#       #annotations = join(jts, 'joints.mat')
-
-#       ex = joints[:,:,index]
-
-#       #print(ex)
-
-#       ex = ex[ex[:,2]>0]
-#       ex += pad
-
-#       #print(np.shape(ex))
-
-#       x1, y1 = ex[:,0], ex[:,1]
-
-#       min_x, min_y = np.amin(x1), np.amin(y1)
-#       max_x, max_y = np.amax(x1), np.amax(y1)
-
-#       bbox_w = max_x - min_x
-#       bbox_h = max_y - min_y
-#       bbox_cx, bbox_cy = max_x - bbox_w/2, max_y - bbox_h/2
-
-#       # print(bbox_w)
-#       # print(bbox_h)
-
-#       side_length = np.max([bbox_w, bbox_h])
-
-#       # print(side_length)
-
-#       bbox_min_x, bbox_min_y = int(np.floor(bbox_cx - side_length/2)), int(np.floor(bbox_cy - side_length/2))
-#       bbox_max_x, bbox_max_y = int(np.ceil(bbox_cx + side_length/2)), int(np.ceil(bbox_cy + side_length/2))
-
-#       if bbox_max_x - bbox_min_x > bbox_max_y - bbox_min_y:
-            
-#             bbox_max_y += 1
-
-#       if bbox_max_x - bbox_min_x < bbox_max_y - bbox_min_y:
-            
-#             bbox_max_x += 1
-
-#       # bbox_min_x += 2*pad
-#       # bbox_min_y += 2*pad
-
-#       bbox_min_x -= bbox_pad
-#       bbox_min_y -= bbox_pad
-
-#       bbox_max_x += bbox_pad
-#       bbox_max_y += bbox_pad
-
-#       # print(x1)
-#       # print(y1)
-
-
-
-#       # print(np.shape(img))
-            
-#       padded_img = padded_img[bbox_min_y:bbox_max_y, bbox_min_x:bbox_max_x]
-
-#       print(np.shape(padded_img))
-
-#       plt.scatter(bbox_cx, bbox_cy, c='lime')
-
-#       plt.scatter(x1, y1, c='gold')
-
-#       plt.scatter(min_x, min_y, c='fuchsia')
-
-#       plt.scatter(max_x, max_y, c='fuchsia')
-
-#       plt.scatter(bbox_min_x, bbox_min_y, c='aquamarine')
-
-#       plt.scatter(bbox_max_x, bbox_max_y, c='aquamarine')
-
-
-#       jt = np.array(joints)
-
-#       plt.show()
-
-#       plt.clf()
-
-#       side_length = np.shape(padded_img)[0]
-
-#       padded_img = cv2.resize(padded_img, (224, 224))
-
-#       scale_factor = float(224.0/side_length)
-
-#       print(scale_factor)
-
-#       # print(np.shape(img))
-
-#       imgplot = plt.imshow(padded_img)
-
-#       x1 -= bbox_min_x 
-#       y1 -= bbox_min_y
-
-#       x1 = x1 * scale_factor
-#       y1 = y1 * scale_factor
-
-#       plt.scatter(x1, y1)
-
-#       plt.show()
-
-#       index += 1
-
-
-# toc = time.perf_counter()
-
