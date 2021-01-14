@@ -95,10 +95,10 @@ for i in range(num_images):
 print(np.shape(joints))
 print(joints)
 
-joints = np.reshape(joints, (num_joints, 3))
+# joints = np.reshape(joints, (num_joints, 3))
 
-print(np.shape(joints))
-print(joints)
+# print(np.shape(joints))
+# print(joints)
 # # print(np.shape(joints_vis))
 
 
