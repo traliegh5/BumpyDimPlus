@@ -9,10 +9,7 @@ from .STAR.tf.star import STAR,tf_rodrigues
 
 
 
-num_im_feats=2048
-resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
-generator=Generator()
-discriminator=Discriminator()
+
 def reprojLoss(keys,predKeys):
     """keys: N x K x 3
       predKeys: N x K x 2
@@ -63,11 +60,11 @@ def texture_loss():
     
     return None 
 
-def train(discriminator,generator,star,imageBatch,labelBatch,meshBatch):
-    feats=resNet(imageBatch)
+def train(discriminator,generator,star,feats,labelBatch,meshBatch):
+    
     with tf.GradientTape() as tape:
         params=generator(feats)
-        pose=params[:,3:72]
+        pose=params[:,3:75]
         shape=params[:,75:]
         camera=params[:,:3]
         #INVESTIGATE inputs outputs of star. in particular, check camera. 
@@ -87,7 +84,7 @@ def train(discriminator,generator,star,imageBatch,labelBatch,meshBatch):
         #assuming meshBatch is the same shape as the params...
 
         realShape=meshBatch[:,75:]
-        realPose=tf_rodrigues(meshBatch[:,3:72])
+        realPose=tf_rodrigues(meshBatch[:,3:75])
         realDisc=discriminator(realShape,realPose)
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
@@ -116,4 +113,26 @@ def main():
     #for loops for training batches and for  training epochs. 
     #
     #  bookkeeping things, like put in loss printlines 
+    epochs=10
+    batch_size=400
+    num_batches=None
+    num_im_feats=2048
+    resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
+
+    generator=Generator(batch_size)
+    discriminator=Discriminator(batch_size)
+    star=STAR()
+    
+    for i in range(0,epochs):
+        for j in range(0,num_batches):
+            #batching: depends on what we do for data, I'm not sure what to do here.
+            #once you have a batch, run train method on that batch. 
+            #
+            imBatch=None
+            labelBatch=None
+            priorBatch=None
+            feats=resNet(imBatch)
+
+            train(discriminator,generator,star,feats,labelBatch,priorBatch)
+
     return None
