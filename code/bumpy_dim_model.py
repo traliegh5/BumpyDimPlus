@@ -5,7 +5,7 @@ import random
 import math
 
 class Generator(tf.keras.Model):
-    def __init__(self):
+    def __init__(self,batch_size):
         """
         This model will contain code for the generator
         Set up all of the functions for batching!!!
@@ -19,7 +19,7 @@ class Generator(tf.keras.Model):
         self.dropout_rate=.5 #figure out what dropout rate to use. fine tuning?
         self.num_iterations=3
         self.SMPLnum=0
-        self.batch_size=10
+        self.batch_size=batch_size
 
         #TODO figure out args of resnet initialization, got to output right shape.
         
@@ -71,14 +71,14 @@ class Generator(tf.keras.Model):
     
 
 class Discriminator(tf.keras.Model):
-    def __init__(self):
+    def __init__(self,batch_size):
         """
         This model will contain code for the Discriminator
         """
         super(Discriminator, self).__init__()
         self.poseMatrixShape=[3,3]
         self.learning_rate=1e-3
-        self.batch_size=10
+        self.batch_size=batch_size
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         #ShapeDiscriminator
         self.shapeD1=tf.keras.layers.Dense(10,activation='relu')
