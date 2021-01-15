@@ -46,7 +46,7 @@ jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_datas
 
 # jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/mpii_human_pose_v1_u12_2/mpii_human_pose_v1_u12_1.mat"
 
-images = sorted([i for i in glob.glob(join(data_directory, 'images/*.jpg'))])
+images = sorted([i for i in glob.glob(join(data_directory, 'images/4/*.jpg'))])
 
 joints = sio.loadmat(jts)['joints']
 
@@ -58,7 +58,7 @@ num_joints = 14
 
 print(num_images)
 
-index = 0
+index = 469
 
 for i in images:
 
@@ -163,12 +163,31 @@ for i in images:
 
       index += 1
 
-joints_to_smpl_form = np.zeros((num_images, num_joints, 3))
-for i in joints:
-      for j in i:
-            joints_to_smpl_form[i][j] = np.array(joints[:,:,0], joints[:,:,1], joints[:,:,2])
+joints_to_smpl_form = []
+for i in range(num_images):
+      # print('joints_i:', joints[:,:,i])
 
-# print(joints_to_smpl_form)
+      i_joints = np.zeros((num_joints, 3))
+
+      for jt in range(num_joints):
+            # print('j:', j)
+            # print('j_0:',j[0])
+            # print('j_1:',j[1])
+            # print('j_2:',j[2])
+            # print('jt:', jt)
+            j = joints[:,:,i][jt]
+            x = j[0]
+            y = j[1]
+            vis = j[2]
+            i_joints[jt] = np.array([x, y, vis])
+            # print(joints[:,:,1])
+            # print(joints[:,:,2])
+            # print('obj:', np.array([x, y, vis]))
+            # print(joint)
+      joints_to_smpl_form.append(i_joints)
+
+
+# print('jtsf:', joints_to_smpl_form)
 
 end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
