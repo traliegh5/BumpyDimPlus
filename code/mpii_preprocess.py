@@ -14,8 +14,8 @@ import tensorlayer as tl
 from skimage import io, img_as_ubyte, img_as_float32
 from os.path import join
 
-start_index = 6468 + 41
-end_index = 6468 + 42
+start_index = 0
+end_index = 25000
 
 # image_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/"
 image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII"
@@ -144,12 +144,15 @@ for i in range(num_images):
         # print(ex_all)
 
         # if joints_vis[index] > 4:
-        ex = ex_all[ex_all[:,2] > 0.5]
-        if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
-            print('ex:', ex)
-        ex = np.vstack((ex, ex_all[13]))
-        if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
-            print('ex:', ex)
+        ex = ex_all[ex_all[:,2] > 0.0]
+
+        # if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
+        #     print('ex:', ex)
+        if(not(ex_all[13][0] == 0.0 and ex_all[13][1] == 0.0 and ex_all[13][2] == 0.0)):
+            ex = np.vstack((ex, ex_all[13]))
+        # if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
+        #     print('ex:', ex)
+
         ex += pad
 
         # else:
