@@ -50,10 +50,15 @@ images = sorted([i for i in glob.glob(join(data_directory, 'images/*.jpg'))])
 
 joints = sio.loadmat(jts)['joints']
 
-print(np.shape(joints))
-print('joints:', joints)
+# print(np.shape(joints))
+# print('joints:', joints)
 
-index = 469
+num_images = len(images)
+num_joints = 14
+
+print(num_images)
+
+index = 0
 
 for i in images:
 
@@ -158,9 +163,18 @@ for i in images:
 
       index += 1
 
+joints_to_smpl_form = np.zeros((num_images, num_joints, 3))
+for i in joints:
+      for j in i:
+            joints_to_smpl_form[i][j] = np.array(joints[:,:,0], joints[:,:,1], joints[:,:,2])
+
+# print(joints_to_smpl_form)
 
 end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
+
+# saving joints, etc.
+
 
 '''
 4. Run!
@@ -169,3 +183,4 @@ print("processing took %s minutes. nice!" %((end - start)/60.0))
       b. everything!
 5. Extend to MPII
 '''
+
