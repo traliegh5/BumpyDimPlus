@@ -11,15 +11,22 @@ import glob
 import time
 import sys
 import tensorlayer as tl
-
+from skimage import io, img_as_ubyte, img_as_float32
 from os.path import join
 
-img_train_list, ann_train_list, img_test_list, ann_test_list = tl.files.load_mpii_pose_dataset("/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/")
+start_index = 6468
+end_index = 25000
 
+# image_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/"
+image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII"
+
+img_train_list, ann_train_list, img_test_list, ann_test_list = tl.files.load_mpii_pose_dataset(image_dir)
+print("GOT MPII FROM TENSORLAYER")
 # print('img_train_list', ann_train_list[0])
 # print('img_train_list', img_train_list[0])
 # print('ann_test_list:', len(ann_train_list))
 
+missing_imgs = ['040348287.jpg', '002878268.jpg']
 pad = 500
 bbox_pad = 40
 im_size = 224
@@ -52,7 +59,7 @@ mpii_to_lsp = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 8: 12, 9: 13, 10: 6, 11: 7,
 
 num_joints = 14
 # slice = ann_train_list[5600:5610]
-slice = ann_train_list[:]
+slice = ann_train_list[start_index:end_index]
 num_images = len(slice)
 
 joints = []
@@ -92,8 +99,8 @@ for i in range(num_images):
 # print(no_joints)
 # print('joints:', joints)
 # # print(joints_vis)
-print(np.shape(joints))
-print(joints)
+# print(np.shape(joints))
+#print(joints)
 
 # joints = np.reshape(joints, (num_joints, 3))
 
@@ -103,31 +110,38 @@ print(joints)
 
 
 # img_slice = img_train_list[5600:5610]
-img_slice = img_train_list[:]
-
+img_slice = img_train_list[start_index:end_index]
 
 index = 0
-
+too_few_visible = 0
+print("NUM_IMAGES: ", num_images)
 for i in range(num_images):
 
-    if i in no_joints or joints_vis[index] < 5:
+    if i in no_joints:
+        print('Passed, Unnannotated: ', i)
         pass
-
+    elif joints_vis[index] < 5:
+        print('Passed, Too Few Visible Joints: ', i)
+        print('Visible Joints: ', joints_vis[index])
+        index += 1
+        too_few_visible += 1
+        pass
+    elif img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] in missing_imgs:
+        print('Passed, Missing Image: ', i)
+        index += 1
+        too_few_visible += 1
+        pass
     else:
         img = img_slice[i]
         img = mpimg.imread(img)
         img = np.array(img)
         padded_img = np.pad(img, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
-        imgplot = plt.imshow(padded_img)
-
-        # print(joints)
-        # print(np.shape(joints))
 
         ex_all = joints[index]
 
         # np.reshape(ex_all, (num_joints, 3))
 
-        print(ex_all)
+        # print(ex_all)
 
         # if joints_vis[index] > 4:
         ex = ex_all[ex_all[:,2]>0]
@@ -141,6 +155,7 @@ for i in range(num_images):
 
         x1, y1 = ex[:,0], ex[:,1]
 
+        # if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
         # print('x1:', x1)
         # print('y1:', y1)
 
@@ -161,8 +176,8 @@ for i in range(num_images):
 
         bbox_cx, bbox_cy = max_x - bbox_w/2, max_y - bbox_h/2
 
-        # print('bbox_cx:', bbox_cx)
-        # print('bbox_cy:', bbox_cy)
+        print('bbox_cx:', bbox_cx)
+        print('bbox_cy:', bbox_cy)
 
         side_length = np.max([bbox_w, bbox_h])
 
@@ -181,16 +196,21 @@ for i in range(num_images):
         bbox_max_x += bbox_pad
         bbox_max_y += bbox_pad
 
+        # print(np.shape(padded_img))
+        # print("MIN: ", bbox_min_y, ', ',bbox_min_x)
+        # print("MAX: ", bbox_max_y, ', ',bbox_max_x)
+        
+        #     imgplot = plt.imshow(padded_img)
+        #     plt.scatter(bbox_cx, bbox_cy, c='lime')
+        #     plt.scatter(x1, y1, c='gold')
+        #     # plt.scatter(min_x, min_y, c='fuchsia')
+        #     # plt.scatter(max_x, max_y, c='fuchsia')
+        #     plt.scatter(bbox_min_x, bbox_min_y, c='aquamarine')
+        #     plt.scatter(bbox_max_x, bbox_max_y, c='aquamarine')
+        #     plt.show()
         padded_img = padded_img[bbox_min_y:bbox_max_y, bbox_min_x:bbox_max_x]
 
-        # print(np.shape(padded_img))
-
-        # plt.scatter(bbox_cx, bbox_cy, c='lime')
-        # plt.scatter(x1, y1, c='gold')
-        # plt.scatter(min_x, min_y, c='fuchsia')
-        # plt.scatter(max_x, max_y, c='fuchsia')
-        # plt.scatter(bbox_min_x, bbox_min_y, c='aquamarine')
-        # plt.scatter(bbox_max_x, bbox_max_y, c='aquamarine')
+        print(np.shape(padded_img))
 
         jt = np.array(joints)
 
@@ -203,23 +223,38 @@ for i in range(num_images):
 
         # print(scale_factor)
 
-        # imgplot = plt.imshow(padded_img)
-
+        #imgplot = plt.imshow(padded_img)
+        image_path = image_dir + '/cropped_mpii/' + str(index - too_few_visible) + '.png'
+        io.imsave(image_path, img_as_ubyte(padded_img.copy()))
+        print("SAVED: ", image_path)
         x1 -= bbox_min_x 
         y1 -= bbox_min_y
 
         x1 = x1 * scale_factor
         y1 = y1 * scale_factor
 
-        # plt.scatter(x1, y1)
-        # plt.show()
+        #Save 14 Joints to annotation file
+        joint_file_name = image_dir + "/joints.txt"
+        f = open(joint_file_name, "a+")
+
+        ex_all[:,0] += pad
+        ex_all[:,1] += pad
+        ex_all[:,0] = (ex_all[:,0] - bbox_min_x) * scale_factor
+        ex_all[:,1] = (ex_all[:,1] - bbox_min_y) * scale_factor
+        for i in range(ex_all.shape[0]):
+            f.write(str(ex_all[i][0]) + ' ' + str(ex_all[i][1]) + ' ' + str(ex_all[i][2]) + '\n')
+        f.close()
+
+        #plt.scatter(ex_all[:,0], ex_all[:,1])
+        #plt.show()
 
         index += 1
 
-# # file = open("joints.txt", "w+")
+# file = open("joints.txt", "w+")
 
 # # Save joints in text file 
-# np.savetxt("joints.txt", joints)
+# joint_file_name = image_dir + '/annotations/' + "joints.txt"
+# np.savetxt(joint_file_name, joints)
 
 # # Displaying the contents of the text file 
 # content = np.loadtxt('joints.txt') 
