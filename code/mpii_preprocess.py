@@ -14,8 +14,8 @@ import tensorlayer as tl
 from skimage import io, img_as_ubyte, img_as_float32
 from os.path import join
 
-start_index = 6468
-end_index = 25000
+start_index = 6468 + 41
+end_index = 6468 + 42
 
 # image_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/"
 image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII"
@@ -144,8 +144,12 @@ for i in range(num_images):
         # print(ex_all)
 
         # if joints_vis[index] > 4:
-        ex = ex_all[ex_all[:,2]>0]
+        ex = ex_all[ex_all[:,2] > 0.5]
+        if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
+            print('ex:', ex)
         ex = np.vstack((ex, ex_all[13]))
+        if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
+            print('ex:', ex)
         ex += pad
 
         # else:
@@ -154,10 +158,6 @@ for i in range(num_images):
         # print(ex)
 
         x1, y1 = ex[:,0], ex[:,1]
-
-        # if img_slice[i][len(img_slice[i]) - 13 : len(img_slice[i])] == '063800324.jpg':
-        # print('x1:', x1)
-        # print('y1:', y1)
 
         min_x, min_y = np.amin(x1), np.amin(y1)
         max_x, max_y = np.amax(x1), np.amax(y1)
@@ -176,8 +176,8 @@ for i in range(num_images):
 
         bbox_cx, bbox_cy = max_x - bbox_w/2, max_y - bbox_h/2
 
-        print('bbox_cx:', bbox_cx)
-        print('bbox_cy:', bbox_cy)
+        # print('bbox_cx:', bbox_cx)
+        # print('bbox_cy:', bbox_cy)
 
         side_length = np.max([bbox_w, bbox_h])
 
@@ -210,9 +210,7 @@ for i in range(num_images):
         #     plt.show()
         padded_img = padded_img[bbox_min_y:bbox_max_y, bbox_min_x:bbox_max_x]
 
-        print(np.shape(padded_img))
-
-        jt = np.array(joints)
+        # print(np.shape(padded_img))
 
         # plt.show()
         # plt.clf()
