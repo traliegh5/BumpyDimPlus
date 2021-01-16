@@ -60,7 +60,7 @@ def texture_loss():
     
     return None 
 
-def train(discriminator,generator,star,feats,labelBatch,meshBatch):
+def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
     with tf.GradientTape() as tape:
         params=generator(feats)
@@ -68,9 +68,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch):
         shape=params[:,75:]
         camera=params[:,:3]
         #INVESTIGATE inputs outputs of star. in particular, check camera. 
+        
         joints=star(pose,shape,camera).Jtr
         J_lsp=lsp_STAR(joints)
-        keypoints=orth_project(J_lsp)
+        if not texture:
+            keypoints=orth_project(J_lsp)
 
 
 
@@ -94,9 +96,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch):
         # make texture maps from meshes(from keypoints) 
         # make visibility mask 
         # input maps and mask into texture loss function
-        texLoss=texture_loss()
-
-        totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+        if texture:
+            texLoss=texture_loss()
+            totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+        else:
+            totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
     gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
@@ -114,7 +118,7 @@ def main():
     #
     #  bookkeeping things, like put in loss printlines 
     epochs=10
-    batch_size=400
+    batch_size=100
     num_batches=None
     num_im_feats=2048
     resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
