@@ -8,6 +8,7 @@ from bumpy_dim_model import Generator, Discriminator
 sys.path.append('D:\\Brown\\Senior\\CSCI_1470\\FINAL\\BumpyDimPlus\\STAR')
 from star.tf.star import STAR, tf_rodrigues
 from data_loader import load_joints, load_and_process_image
+import matplotlib.pyplot as plt
 
 def reprojLoss(keys,predKeys):
     """keys: N x K x 3
@@ -123,7 +124,7 @@ def main():
 
     generator=Generator(batch_size)
     discriminator=Discriminator(batch_size)
-    star=STAR()
+    star=STAR(gender='neutral')
 
     # Load Joint annotations
     lsp_dir = ""
@@ -146,7 +147,7 @@ def main():
 
     # in a directory
     dir_path = mpii_dir + '/*.png'
-    dataset = tf.data.Dataset.list_files(dir_path)
+    dataset = tf.data.Dataset.list_files(img_mpii_names, shuffle=False)
     dataset = dataset.map(map_func=load_and_process_image)
     dataset = dataset.batch(batch_size)
     mpii_ds = dataset
@@ -154,10 +155,11 @@ def main():
     # lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
-    print("WE ARE HERE< YAY")
-    for i, batch in enumerate(dataset):
-        print(batch.shape)
-
+    for i, batch in enumerate(mpii_ds):
+        print(i)
+        img = batch[0]
+        imgplot = plt.imshow(img)
+        plt.show()
     # for i in range(0,epochs):
     #     for j in range(0,num_batches):
     #         #batching: depends on what we do for data, I'm not sure what to do here.

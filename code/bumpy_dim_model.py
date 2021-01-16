@@ -76,6 +76,7 @@ class Discriminator(tf.keras.Model):
         This model will contain code for the Discriminator
         """
         super(Discriminator, self).__init__()
+        self.num_joints = 23
         self.poseMatrixShape=[3,3]
         self.learning_rate=1e-3
         self.batch_size=batch_size
@@ -87,8 +88,8 @@ class Discriminator(tf.keras.Model):
 
         #the pose embedding network, common to all pose discriminators.
         #this needs to be changed, to convolution because inputs are matices
-        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channel_last")
-        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channel_last")
+        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channels_last")
+        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channels_last")
         #self.pe1=tf.keras.layers.Dense(32,activation='relu')
         #self.pe2=tf.keras.layers.Dense(32,activation='relu')
 
@@ -100,7 +101,7 @@ class Discriminator(tf.keras.Model):
 
 
         #ovarallPoseDiscriminator
-        self.flatten=tf.keras.layers.Flatten(data_format="channel_last")
+        self.flatten=tf.keras.layers.Flatten(data_format="channels_last")
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
         self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
