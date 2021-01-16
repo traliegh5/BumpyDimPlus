@@ -91,14 +91,15 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
-        repLoss=reprojLoss(labelBatch,keypoints)
+        if not texture:
+            repLoss=reprojLoss(labelBatch,keypoints)
 
         # make texture maps from meshes(from keypoints) 
         # make visibility mask 
         # input maps and mask into texture loss function
         if texture:
             texLoss=texture_loss()
-            totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+            totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
             totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
