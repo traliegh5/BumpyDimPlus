@@ -1,17 +1,15 @@
-import os
+import sys, os
 import tensorflow as tf
 import numpy as np
 import random
 import math
+from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-"""the doc where we will run all of this. we can use the 
-main func to do this. I think that we can use functions outside
-of the model to calculate losses. The structure of this is not
-set in stone, I'm just getting the ball rolling. """
-num_im_feats=2048
-resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
-generator=Generator()
-discriminator=Discriminator()
+sys.path.append('D:\\Brown\\Senior\\CSCI_1470\\FINAL\\BumpyDimPlus\\STAR')
+from star.tf.star import STAR, tf_rodrigues
+from data_loader import load_joints, load_and_process_image
+import matplotlib.pyplot as plt
+
 def reprojLoss(keys,predKeys):
     """keys: N x K x 3
       predKeys: N x K x 2
@@ -22,14 +20,10 @@ def reprojLoss(keys,predKeys):
     dif=tf.math.subtract(keys[:,:2],predKeys)
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    """not sure what else needs to be done in this function. First i reshape the keys and predKeys, then i compute a visibility
-    mask using the 3rd element in the 3rd dimmension of keys, then I compute keypoint loss, masking this with visibility.
-    The shape of this might not be right... this doesnt return a scalar, but I dont want to edit it yet. We should probably reduce sum.
-    """
+    finloss=tf.reduce_sum(maskAbsDif)
     
-    return maskAbsDif
+    return finloss
 
-#
 def discLoss(disReal,disFake):
     """"inputs:
     disReal: Nx(23+1+1)
@@ -64,24 +58,48 @@ def texture_loss():
     
     return None 
 
-def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
-    feats=resNet(imageBatch)
+def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
+    
     with tf.GradientTape() as tape:
         params=generator(feats)
-        keypoints=[params]
-        #keypoints=SOMETHING
-        realDisc=discriminator(meshBatch)
-        fakeDisc=discriminator(keypoints)
+        pose=params[:,3:75]
+        shape=params[:,75:]
+        camera=params[:,:3]
+        #INVESTIGATE inputs outputs of star. in particular, check camera. 
+        
+        joints=star(pose,shape,camera).Jtr
+        J_lsp=lsp_STAR(joints)
+        if not texture:
+            keypoints=orth_project(J_lsp)
+
+
+
+        #19joints=reduceJoints(joints)
+        #keypoints=project(19joints,camera)
+         
+        """Here, the discriminator takes in (pose,shape) as the parameters, and not just a singe param."""
+        #These two reals coem from meshBatch How this gets indexed into depends on the Prior Data shape. 
+        #note: going from Prior data to realPose involves using star's rodrigues formula. 
+
+        #assuming meshBatch is the same shape as the params...
+
+        realShape=meshBatch[:,75:]
+        realPose=tf_rodrigues(meshBatch[:,3:75])
+        realDisc=discriminator(realShape,realPose)
+        fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
-        repLoss=reprojLoss(labelBatch,keypoints)
+        if not texture:
+            repLoss=reprojLoss(labelBatch,keypoints)
 
         # make texture maps from meshes(from keypoints) 
         # make visibility mask 
         # input maps and mask into texture loss function
-        texLoss=texture_loss()
-
-        totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+        if texture:
+            texLoss=texture_loss()
+            totalGenLoss=tf.concat([advLossGen,texLoss],0)
+        else:
+            totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
     gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
@@ -92,3 +110,76 @@ def train(discriminator,generator,imageBatch,labelBatch,meshBatch):
    
     return None 
  
+def main():
+    #todo: initilize models with batch size params
+    #load data,
+    #for loops for training batches and for  training epochs. 
+    #
+    #  bookkeeping things, like put in loss printlines 
+    batch_size=10
+    if len(sys.arv)!=2:
+        generator=Generator(batch_size)
+        discriminator=Discriminator(batch_size)
+    elif sys.argv[1]=="Load":
+        generator=tf.keras.models.load_model(genFilePath)
+        discriminator=tf.keras.models.load_model(discFilePath)
+
+
+    epochs=10
+    batch_size=10
+    num_batches=None
+    num_im_feats=2048
+    resNet=tf.keras.applications.ResNet50V2(include_top=False, classes=num_im_feats)
+
+   
+    star=STAR(gender='neutral')
+
+    # Load Joint annotations
+    lsp_dir = ""
+    mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
+    h36_dir = ""
+    lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
+    
+    # # Create Image datasets
+    # # Create a Dataset that contains all .png files
+    # # in a directory
+    # dir_path = lsp_dir + '/*.png’
+    # dataset = tf.data.Dataset.list_files(dir_path)
+    # # Apply a function that will read the contents of
+    # # each file into a tensor
+    # dataset = dataset.map(map_func=load_and_process_image)
+    # # Load up data in batches
+    # dataset = dataset.batch(batch_size)
+    # # Prefetch the next batch while GPU is training
+    # lsp_ds = dataset
+
+    # in a directory
+    dir_path = mpii_dir + '/*.png'
+    dataset = tf.data.Dataset.list_files(img_mpii_names, shuffle=False)
+    dataset = dataset.map(map_func=load_and_process_image)
+    dataset = dataset.batch(batch_size)
+    mpii_ds = dataset
+
+    # lsp_ds = lsp_ds.prefetch(1)
+    mpii_ds = mpii_ds.prefetch(1)
+    # Iterate over dataset
+    
+    for i, batch in enumerate(mpii_ds):
+        
+        print(i)
+        img = batch[0]
+        imgplot = plt.imshow(img)
+        plt.show()
+    
+             #batching: depends on what we do for data, I'm not sure what to do here.
+             #once you have a batch, run train method on that batch. 
+             #
+        imBatch=batch
+        joint_batch=mpii_joints[i:i+batch_size,:,:]
+        priorBatch=None
+        feats=resNet(imBatch)
+        train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
+        tf.keras.models.save_model(discriminator,genFilePath)
+        tf.keras.models.save_model(generator,discFilePath)
+if __name__ == '__main__':
+    main()
