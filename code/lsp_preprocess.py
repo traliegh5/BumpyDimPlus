@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import glob
 import time
+from skimage import io, img_as_ubyte, img_as_float32
 
 from os.path import join
 
@@ -28,8 +29,8 @@ from os.path import join
   
 #   images = sorted([i for i in glob(join(data_directory, 'images/*.jpg'))])
 
-pad = 75
-bbox_pad = 30
+pad = 100
+bbox_pad = 35
 im_size = 224
 
 '''LSP'''
@@ -37,6 +38,8 @@ im_size = 224
 start = time.time()
 
 data_directory = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/"
+
+img_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/images/"
 
 jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_dataset/joints.mat"
 
@@ -46,7 +49,7 @@ jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/LSP/lsp_datas
 
 # jts = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/MPII/mpii_human_pose_v1_u12_2/mpii_human_pose_v1_u12_1.mat"
 
-images = sorted([i for i in glob.glob(join(data_directory, 'images/4/*.jpg'))])
+images = sorted([i for i in glob.glob(join(data_directory, 'images/*.jpg'))])
 
 joints = sio.loadmat(jts)['joints']
 
@@ -56,13 +59,15 @@ joints = sio.loadmat(jts)['joints']
 num_images = len(images)
 num_joints = 14
 
+joints_to_smpl_form = []
+
 print(num_images)
 
-index = 469
+index = 0
 
-for i in images:
+for i in range(num_images):
 
-      img = i
+      img = images[i]
       img = mpimg.imread(img)
       img = np.array(img)
 
@@ -152,58 +157,86 @@ for i in images:
 
       # imgplot = plt.imshow(padded_img)
 
+      image_path = img_dir + '/cropped_lsp/' + str(index) + '.png'
+      io.imsave(image_path, img_as_ubyte(padded_img.copy()))
+      print("SAVED: ", image_path)
+
       x1 -= bbox_min_x 
       y1 -= bbox_min_y
 
       x1 = x1 * scale_factor
       y1 = y1 * scale_factor
 
-      # plt.scatter(x1, y1)
-      # plt.show()
-
-      index += 1
-
-joints_to_smpl_form = []
-for i in range(num_images):
-      # print('joints_i:', joints[:,:,i])
-
       i_joints = np.zeros((num_joints, 3))
 
       for jt in range(num_joints):
-            # print('j:', j)
-            # print('j_0:',j[0])
-            # print('j_1:',j[1])
-            # print('j_2:',j[2])
-            # print('jt:', jt)
             j = joints[:,:,i][jt]
             x = j[0]
             y = j[1]
             vis = j[2]
             i_joints[jt] = np.array([x, y, vis])
-            # print(joints[:,:,1])
-            # print(joints[:,:,2])
-            # print('obj:', np.array([x, y, vis]))
-            # print(joint)
       joints_to_smpl_form.append(i_joints)
+
+      #Save 14 Joints to annotation file
+      joint_file_name = data_directory + "/joints.txt"
+      f = open(joint_file_name, "a+")
+
+      i_joints[:,0] += pad
+      i_joints[:,1] += pad
+      i_joints[:,0] = (i_joints[:,0] - bbox_min_x) * scale_factor
+      i_joints[:,1] = (i_joints[:,1] - bbox_min_y) * scale_factor
+      for i in range(i_joints.shape[0]):
+            f.write(str(i_joints[i][0]) + ' ' + str(i_joints[i][1]) + ' ' + str(i_joints[i][2]) + '\n')
+      f.close()
+
+      # plt.scatter(x1, y1)
+      # plt.show()
+
+      index += 1
+
+# joints_to_smpl_form = []
+# for i in range(num_images):
+#       # print('joints_i:', joints[:,:,i])
+
+#       i_joints = np.zeros((num_joints, 3))
+
+#       for jt in range(num_joints):
+#             # print('j:', j)
+#             # print('j_0:',j[0])
+#             # print('j_1:',j[1])
+#             # print('j_2:',j[2])
+#             # print('jt:', jt)
+#             j = joints[:,:,i][jt]
+#             x = j[0]
+#             y = j[1]
+#             vis = j[2]
+#             i_joints[jt] = np.array([x, y, vis])
+#             # print(joints[:,:,1])
+#             # print(joints[:,:,2])
+#             # print('obj:', np.array([x, y, vis]))
+#             # print(joint)
+#       joints_to_smpl_form.append(i_joints)
+
+#       #Save 14 Joints to annotation file
+#       joint_file_name = image_dir + "/joints.txt"
+#       f = open(joint_file_name, "a+")
+
+#       joints_to_smpl_form[:,0] += pad
+#       joints_to_smpl_form[:,1] += pad
+#       joints_to_smpl_form[:,0] = (joints_to_smpl_form[:,0] - bbox_min_x) * scale_factor
+#       joints_to_smpl_form[:,1] = (joints_to_smpl_form[:,1] - bbox_min_y) * scale_factor
+#       for i in range(joints_to_smpl_form.shape[0]):
+#             f.write(str(joints_to_smpl_form[i][0]) + ' ' + str(joints_to_smpl_form[i][1]) + ' ' + str(joints_to_smpl_form[i][2]) + '\n')
+#       f.close()
 
 
 # print('jtsf:', joints_to_smpl_form)
-            image_path = image_dir + '/cropped_lsp/' + str(index) + '.png'
-            io.imsave(image_path, img_as_ubyte(padded_img.copy()))
-            print("SAVED: ", image_path)
 
 
-            #Save 14 Joints to annotation file
-            joint_file_name = image_dir + "/joints.txt"
-            f = open(joint_file_name, "a+")
+      
 
-            ex_all[:,0] += pad
-            ex_all[:,1] += pad
-            ex_all[:,0] = (ex_all[:,0] - bbox_min_x) * scale_factor
-            ex_all[:,1] = (ex_all[:,1] - bbox_min_y) * scale_factor
-            for i in range(ex_all.shape[0]):
-                f.write(str(ex_all[i][0]) + ' ' + str(ex_all[i][1]) + ' ' + str(ex_all[i][2]) + '\n')
-            f.close()
+
+      
 
 end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
