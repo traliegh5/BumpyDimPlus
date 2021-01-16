@@ -116,21 +116,29 @@ def main():
     #for loops for training batches and for  training epochs. 
     #
     #  bookkeeping things, like put in loss printlines 
+    batch_size=10
+    if len(sys.arv)!=2:
+        generator=Generator(batch_size)
+        discriminator=Discriminator(batch_size)
+    elif sys.argv[1]=="Load":
+        generator=tf.keras.models.load_model(genFilePath)
+        discriminator=tf.keras.models.load_model(discFilePath)
+
+
     epochs=10
     batch_size=10
     num_batches=None
     num_im_feats=2048
     resNet=tf.keras.applications.ResNet50V2(include_top=False, classes=num_im_feats)
 
-    generator=Generator(batch_size)
-    discriminator=Discriminator(batch_size)
+   
     star=STAR(gender='neutral')
 
     # Load Joint annotations
     lsp_dir = ""
     mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
-    # lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
+    lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     
     # # Create Image datasets
     # # Create a Dataset that contains all .png files
@@ -155,21 +163,23 @@ def main():
     # lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
+    
     for i, batch in enumerate(mpii_ds):
+        
         print(i)
         img = batch[0]
         imgplot = plt.imshow(img)
         plt.show()
-    # for i in range(0,epochs):
-    #     for j in range(0,num_batches):
-    #         #batching: depends on what we do for data, I'm not sure what to do here.
-    #         #once you have a batch, run train method on that batch. 
-    #         #
-    #         imBatch=None
-    #         labelBatch=None
-    #         priorBatch=None
-    #         feats=resNet(imBatch)
-
-    #         train(discriminator,generator,star,feats,labelBatch,priorBatch)
+    
+             #batching: depends on what we do for data, I'm not sure what to do here.
+             #once you have a batch, run train method on that batch. 
+             #
+        imBatch=batch
+        joint_batch=mpii_joints[i:i+batch_size,:,:]
+        priorBatch=None
+        feats=resNet(imBatch)
+        train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
+        tf.keras.models.save_model(discriminator,genFilePath)
+        tf.keras.models.save_model(generator,discFilePath)
 if __name__ == '__main__':
     main()
