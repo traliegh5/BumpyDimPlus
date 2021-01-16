@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+
 def load_joints(lsp_dir, mpii_dir, h36_dir):
     # Load LSP Data
     lsp_joints = load_joints(lsp_dir)
