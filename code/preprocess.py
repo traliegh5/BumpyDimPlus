@@ -25,6 +25,8 @@ all_pickles = sorted([pkl for pkl in glob.glob(join(pickles_directory, '*/*.pkl'
 
 # print(all_pickles)
 
+# all_pickles = all_pickles[:10]
+
 poses, shapes = [], []
 
 for p in all_pickles:
@@ -55,12 +57,51 @@ for p in all_pickles:
 
 poses = np.vstack(poses)
 # shapes = np.vstack(shapes)
-h_shapes = np.hstack(shapes).T
+shapes = np.hstack(shapes).T
 
 print(poses.shape)
 # print(shapes.shape)
-print(h_shapes.shape)
+print(shapes.shape)
 
+# file = open("poses_netruSMPL_CMU.txt", "w+")
+
+# # Save poses in .txt file 
+# poses_file_name = pickles_directory + "poses_netruSMPL_CMU.txt"
+# np.savetxt(poses_file_name, poses)
+
+np.save('poses_netruSMPL_CMU.npy', poses)
+
+print("Array saved in file poses_netruSMPL_CMU.npy")
+
+poses_contents = np.load('poses_netruSMPL_CMU.npy')
+
+print('poses_contents:', poses_contents)
+
+print('poses check:', np.shape(poses_contents))
+
+# # Displaying contents of poses_netruSMPL_CMU.txt
+# poses_content = np.loadtxt('poses_netruSMPL_CMU.txt') 
+# print("\nContent in poses_netruSMPL_CMU.txt:\n", poses_content) 
+
+np.save('shapes_netruSMPL_CMU.npy', shapes)
+
+# # Save poses in .txt file 
+# shapes_file_name = pickles_directory + "shapes_netruSMPL_CMU.txt"
+# np.savetxt(shapes_file_name, shapes)
+
+print("Array saved in file shapes_netruSMPL_CMU.npy")
+
+
+shapes_contents = np.load('shapes_netruSMPL_CMU.npy')
+
+print('shapes_contents:', shapes_contents)
+
+print('shapes check:', np.shape(shapes_contents))
+
+
+# # Displaying contents of shapes_netruSMPL_CMU.txt
+# shapes_content = np.loadtxt('poses_netruSMPL_CMU.txt') 
+# print("\nContent in shapes_netruSMPL_CMU.txt:\n", shapes_content) 
 
 
 # if __name__ == '__main__':
