@@ -4,7 +4,7 @@ from skimage import io, img_as_ubyte, img_as_float32
 from os.path import join
 import numpy as np
 
-index_to_check = 36
+index_to_check = 16100
 image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII"
 img = mpimg.imread(image_dir + '/cropped_mpii/' + str(index_to_check) + '.png')
 

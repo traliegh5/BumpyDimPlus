@@ -1,14 +1,13 @@
-import os
+import sys, os
 import tensorflow as tf
 import numpy as np
 import random
 import math
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-from .STAR.tf.star import STAR,tf_rodrigues
-
-
-
+sys.path.append('D:\\Brown\\Senior\\CSCI_1470\\FINAL\\BumpyDimPlus\\STAR')
+from star.tf.star import STAR, tf_rodrigues
+from data_loader import load_joints, load_and_process_image
 
 def reprojLoss(keys,predKeys):
     """keys: N x K x 3
@@ -21,11 +20,9 @@ def reprojLoss(keys,predKeys):
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
     finloss=tf.reduce_sum(maskAbsDif)
-   
     
     return finloss
 
-#
 def discLoss(disReal,disFake):
     """"inputs:
     disReal: Nx(23+1+1)
@@ -114,25 +111,58 @@ def main():
     #
     #  bookkeeping things, like put in loss printlines 
     epochs=10
-    batch_size=400
+    batch_size=10
     num_batches=None
     num_im_feats=2048
-    resNet=tf.keras.applications.ResNet50V2(classes=num_im_feats)
+    resNet=tf.keras.applications.ResNet50V2(include_top=False, classes=num_im_feats)
 
     generator=Generator(batch_size)
     discriminator=Discriminator(batch_size)
     star=STAR()
+
+    # Load Joint annotations
+    lsp_dir = ""
+    mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
+    h36_dir = ""
+    # lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     
-    for i in range(0,epochs):
-        for j in range(0,num_batches):
-            #batching: depends on what we do for data, I'm not sure what to do here.
-            #once you have a batch, run train method on that batch. 
-            #
-            imBatch=None
-            labelBatch=None
-            priorBatch=None
-            feats=resNet(imBatch)
+    # # Create Image datasets
+    # # Create a Dataset that contains all .png files
+    # # in a directory
+    # dir_path = lsp_dir + '/*.png’
+    # dataset = tf.data.Dataset.list_files(dir_path)
+    # # Apply a function that will read the contents of
+    # # each file into a tensor
+    # dataset = dataset.map(map_func=load_and_process_image)
+    # # Load up data in batches
+    # dataset = dataset.batch(batch_size)
+    # # Prefetch the next batch while GPU is training
+    # lsp_ds = dataset
 
-            train(discriminator,generator,star,feats,labelBatch,priorBatch)
+    # in a directory
+    dir_path = mpii_dir + '/*.png'
+    dataset = tf.data.Dataset.list_files(dir_path)
+    dataset = dataset.map(map_func=load_and_process_image)
+    dataset = dataset.batch(batch_size)
+    mpii_ds = dataset
 
-    return None
+    # lsp_ds = lsp_ds.prefetch(1)
+    mpii_ds = mpii_ds.prefetch(1)
+    # Iterate over dataset
+    print("WE ARE HERE< YAY")
+    for i, batch in enumerate(dataset):
+        print(batch.shape)
+
+    # for i in range(0,epochs):
+    #     for j in range(0,num_batches):
+    #         #batching: depends on what we do for data, I'm not sure what to do here.
+    #         #once you have a batch, run train method on that batch. 
+    #         #
+    #         imBatch=None
+    #         labelBatch=None
+    #         priorBatch=None
+    #         feats=resNet(imBatch)
+
+    #         train(discriminator,generator,star,feats,labelBatch,priorBatch)
+if __name__ == '__main__':
+    main()
