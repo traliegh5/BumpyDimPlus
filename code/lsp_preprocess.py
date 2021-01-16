@@ -188,6 +188,22 @@ for i in range(num_images):
 
 
 # print('jtsf:', joints_to_smpl_form)
+            image_path = image_dir + '/cropped_lsp/' + str(index) + '.png'
+            io.imsave(image_path, img_as_ubyte(padded_img.copy()))
+            print("SAVED: ", image_path)
+
+
+            #Save 14 Joints to annotation file
+            joint_file_name = image_dir + "/joints.txt"
+            f = open(joint_file_name, "a+")
+
+            ex_all[:,0] += pad
+            ex_all[:,1] += pad
+            ex_all[:,0] = (ex_all[:,0] - bbox_min_x) * scale_factor
+            ex_all[:,1] = (ex_all[:,1] - bbox_min_y) * scale_factor
+            for i in range(ex_all.shape[0]):
+                f.write(str(ex_all[i][0]) + ' ' + str(ex_all[i][1]) + ' ' + str(ex_all[i][2]) + '\n')
+            f.close()
 
 end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
