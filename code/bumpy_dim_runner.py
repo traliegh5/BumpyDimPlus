@@ -57,7 +57,7 @@ def texture_loss():
     
     return None 
 
-def train(discriminator,generator,star,feats,labelBatch,meshBatch):
+def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
     with tf.GradientTape() as tape:
         params=generator(feats)
@@ -65,9 +65,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch):
         shape=params[:,75:]
         camera=params[:,:3]
         #INVESTIGATE inputs outputs of star. in particular, check camera. 
+        
         joints=star(pose,shape,camera).Jtr
         J_lsp=lsp_STAR(joints)
-        keypoints=orth_project(J_lsp)
+        if not texture:
+            keypoints=orth_project(J_lsp)
 
 
 
@@ -86,14 +88,17 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch):
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
-        repLoss=reprojLoss(labelBatch,keypoints)
+        if not texture:
+            repLoss=reprojLoss(labelBatch,keypoints)
 
         # make texture maps from meshes(from keypoints) 
         # make visibility mask 
         # input maps and mask into texture loss function
-        texLoss=texture_loss()
-
-        totalGenLoss=tf.concat([advLossGen,repLoss,texLoss],0)
+        if texture:
+            texLoss=texture_loss()
+            totalGenLoss=tf.concat([advLossGen,texLoss],0)
+        else:
+            totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
     gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
