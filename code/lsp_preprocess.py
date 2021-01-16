@@ -13,7 +13,6 @@ from skimage import io, img_as_ubyte, img_as_float32
 
 from os.path import join
 
-
 # def get_lsp(data_directory):
   
 #   # load annotation matrices (hopefully)
@@ -242,13 +241,3 @@ end = time.time()
 print("processing took %s minutes. nice!" %((end - start)/60.0))
 
 # saving joints, etc.
-
-
-'''
-4. Run!
-      a. 100 images
-            big problems? y/n
-      b. everything!
-5. Extend to MPII
-'''
-
