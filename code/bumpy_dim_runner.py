@@ -1,4 +1,3 @@
-from code.data_loader import load_cmu
 import sys, os
 import tensorflow as tf
 import numpy as np
@@ -8,7 +7,7 @@ from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
 sys.path.append('D:\\Brown\\Senior\\CSCI_1470\\FINAL\\BumpyDimPlus\\STAR')
 from star.tf.star import STAR, tf_rodrigues
-from data_loader import load_joints, load_and_process_image
+from data_loader import load_joints, load_and_process_image,load_cmu
 import matplotlib.pyplot as plt
 
 def reprojLoss(keys,predKeys):
@@ -84,8 +83,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
 
         #assuming meshBatch is the same shape as the params...
 
-        realShape=meshBatch[:,75:]
-        realPose=tf_rodrigues(meshBatch[:,3:75])
+        realShape=meshBatch[1]
+        realPose=meshBatch[0]
         realDisc=discriminator(realShape,realPose)
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
@@ -139,9 +138,10 @@ def main():
     lsp_dir = ""
     mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
-    neutrMosh_dir = ""
+    neutr_mosh=""
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
-    poses,shapes = load_cmu(neutrMosh_dir)
+    poses,shapes= load_cmu(neutr_mosh)
+    shapes=tf.reshape(shapes,[-1,10])
     
     # # Create Image datasets
     # # Create a Dataset that contains all .png files
@@ -162,7 +162,7 @@ def main():
     dataset = dataset.map(map_func=load_and_process_image)
     dataset = dataset.batch(batch_size)
     mpii_ds = dataset
-
+    
     # lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
@@ -177,9 +177,13 @@ def main():
              #batching: depends on what we do for data, I'm not sure what to do here.
              #once you have a batch, run train method on that batch. 
              #
+        poseBatch=poses[i:i+batch_size,:]
+        poseBatch=tf_rodrigues(poseBatch)
+        shapeBatch=shapes[i:i+batch_size,:]
         imBatch=batch
         joint_batch=mpii_joints[i:i+batch_size,:,:]
-        priorBatch=None
+        
+        priorBatch=[poseBatch,shapeBatch]
         feats=resNet(imBatch)
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         tf.keras.models.save_model(generator,genFilePath)
