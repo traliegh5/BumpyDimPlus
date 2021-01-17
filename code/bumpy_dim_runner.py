@@ -1,4 +1,6 @@
 import sys, os
+import shutil
+import h5py
 import tensorflow as tf
 import numpy as np
 import random
@@ -117,6 +119,8 @@ def main():
     #
     #  bookkeeping things, like put in loss printlines 
     batch_size=10
+    genFilePath="C:\\BumpyDimPlus\Models"+
+    discFilePath="C:\\BumpyDimPlus\Models"+
     if len(sys.arv)!=2:
         generator=Generator(batch_size)
         discriminator=Discriminator(batch_size)
@@ -166,29 +170,55 @@ def main():
     # lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
-    
-    for i, batch in enumerate(mpii_ds):
+    #this is likelye not right, but eventually it should be the 
+    ModelPath="C:\\BumpyDimPlus\Models"
+
+    runGen =  h5py.File("RunGen.hdf5",'r+')
+    runDisc = h5py.File("RunDisc.hdf5",'r+')
+    shutil.move(runGen,ModelPath)
+    shutil.move(runDisc,ModelPath)
+
+    for epoch_num in range(epochs):
         
-        print(i)
-        img = batch[0]
-        imgplot = plt.imshow(img)
-        plt.show()
-    
-             #batching: depends on what we do for data, I'm not sure what to do here.
-             #once you have a batch, run train method on that batch. 
-             #
-        poseBatch=poses[i:i+batch_size,:]
-        poseBatch=tf.reshape(poseBatch,[batch_size,24,3])
-        #this reshape makes sense, but num_joints is 23... so one might have to be dropped
-        poseBatch=tf_rodrigues(poseBatch)
-        shapeBatch=shapes[i:i+batch_size,:]
-        imBatch=batch
-        joint_batch=mpii_joints[i:i+batch_size,:,:]
+        for i, batch in enumerate(mpii_ds):
+            
+            #print(i)
+            #img = batch[0]
+            #imgplot = plt.imshow(img)
+            #plt.show()
         
-        priorBatch=[poseBatch,shapeBatch]
-        feats=resNet(imBatch)
-        train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
-        tf.keras.models.save_model(generator,genFilePath)
-        tf.keras.models.save_model(discriminator,discFilePath)
+                #batching: depends on what we do for data, I'm not sure what to do here.
+                #once you have a batch, run train method on that batch. 
+                #
+            indies=tf.random.shuffle(range(batch_size))
+            poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
+        
+            poseBatch=tf.reshape(poseBatch,[batch_size,24,3])
+            #this reshape makes sense, but num_joints is 23... so one might have to be dropped
+            poseBatch=tf_rodrigues(poseBatch)
+            shapeBatch=tf.gather(shapes[i:i+batch_size,:],indies,axis=0)
+
+            imBatch=tf.gather(batch,indies)
+            joint_batch=tf.gather(mpii_joints[i:i+batch_size,:,:],indies,axis=0)
+            
+            priorBatch=[poseBatch,shapeBatch]
+            feats=resNet(imBatch)
+            train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
+            if i==batch_size:
+                tf.keras.models.save_model(generator,runGen)
+                tf.keras.models.save_model(discriminator,runDisc)
+               
+        #f = h5py.File('myfile.hdf5','r')
+        
+       
+        
+        genFileName = "Generator_epoch_number:"+str(epoch_num)+".hdf5"
+        discFileName = "Discriminator_epoch_number:"+str(epoch_num)+".hdf5"
+        genFile = h5py.File(genFileName,'r+')
+        discFile = h5py.File(discFileName,'r+')
+        tf.keras.models.save_model(generator,genFile)
+        tf.keras.models.save_model(discriminator,discFile)
+        shutil.move(genFile,ModelPath)
+        shutil.move(discFile,ModelPath)
 if __name__ == '__main__':
     main()
