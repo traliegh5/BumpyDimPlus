@@ -163,11 +163,11 @@ def main():
     star=STAR(gender='neutral')
 
     # Load Joint annotations
-    lsp_dir = "home/data/lsp_images"
-    mpii_dir = "home/data/mpii_images"
+    lsp_dir = "/home/gregory_barboy/data/lsp_images"
+    mpii_dir = "/home/gregory_barboy/data/mpii_images"
     #"D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
-    neutr_mosh="home/data/cmu"
+    neutr_mosh="/home/gregory_barboy/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
     shapes=tf.reshape(shapes,[-1,10])
@@ -199,7 +199,7 @@ def main():
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
     #this is likelye not right, but eventually it should be the 
-    ModelPath="home/BumpyDimPlus/Models"
+    ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
     runGen =  h5py.File("RunGen.hdf5",'r+')
     runDisc = h5py.File("RunDisc.hdf5",'r+')
@@ -207,7 +207,7 @@ def main():
     shutil.move(runDisc,ModelPath)
 
     for epoch_num in range(epochs):
-        runOnSet(mpii_dis,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
 
         #  for i, batch in enumerate(lsp_ds):
