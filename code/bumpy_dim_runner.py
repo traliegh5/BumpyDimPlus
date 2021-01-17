@@ -178,6 +178,8 @@ def main():
              #once you have a batch, run train method on that batch. 
              #
         poseBatch=poses[i:i+batch_size,:]
+        poseBatch=tf.reshape(poseBatch,[batch_size,24,3])
+        #this reshape makes sense, but num_joints is 23... so one might have to be dropped
         poseBatch=tf_rodrigues(poseBatch)
         shapeBatch=shapes[i:i+batch_size,:]
         imBatch=batch

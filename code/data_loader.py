@@ -29,6 +29,7 @@ def load_and_process_image(file_path):
     channels=3)
     # Convert image to normalized float [0, 1]
     image = tf.image.convert_image_dtype(image, tf.float32)
+    image=tf.keras.applications.resnet.preprocess_input(image, data_format='channels_last')
     return image
 
 def load_cmu(file_path):
