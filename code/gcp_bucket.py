@@ -28,7 +28,7 @@ def main():
     #for i in range(16507):
         #in_file =  'images/' + f'{i:05}' + '.png'
         #out_file = '/home/data/' + f'{i:05}' + '.png'
-    download_blob('lsp_renum', 'joints.txt', 'lsp_joints')
-    download_blob('mpii_renum', 'joints.txt', 'mpii_joints')
+    download_blob('lsp_renum', 'joints.txt', 'lsp_joints.txt')
+    download_blob('mpii_renum', 'joints.txt', 'mpii_joints.txt')
 if __name__ == '__main__':
     main()
