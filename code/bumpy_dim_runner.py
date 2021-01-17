@@ -162,10 +162,11 @@ def main():
     star=STAR(gender='neutral')
 
     # Load Joint annotations
-    lsp_dir = ""
-    mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
+    lsp_dir = "home/data/lspimages"
+    mpii_dir = "home/data/mpiimages"
+    #"D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
-    neutr_mosh=""
+    neutr_mosh="home/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
     shapes=tf.reshape(shapes,[-1,10])
