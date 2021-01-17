@@ -1,3 +1,4 @@
+from code.data_loader import load_cmu
 import sys, os
 import tensorflow as tf
 import numpy as np
@@ -138,7 +139,9 @@ def main():
     lsp_dir = ""
     mpii_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
+    neutrMosh_dir = ""
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
+    poses,shapes = load_cmu(neutrMosh_dir)
     
     # # Create Image datasets
     # # Create a Dataset that contains all .png files
