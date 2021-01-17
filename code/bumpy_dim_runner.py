@@ -7,7 +7,6 @@ import random
 import math
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-print(os.getcwd())
 sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
 from star.tf.star import STAR, tf_rodrigues
 from data_loader import load_joints, load_and_process_image,load_cmu
@@ -145,7 +144,7 @@ def main():
     batch_size=10
     genFilePath=""
     discFilePath=""
-    if len(sys.arv)!=2:
+    if len(sys.argv)!=2:
         generator=Generator()
         discriminator=Discriminator()
     elif sys.argv[1]=="Load":
