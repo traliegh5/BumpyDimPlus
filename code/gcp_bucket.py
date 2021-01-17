@@ -25,9 +25,10 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
  
 def main():
-    for i in range(16507):
-        in_file =  'images/' + f'{i:05}' + '.png'
-        out_file = '/home/data/' + f'{i:05}' + '.png'
-        download_blob('mpii_renum', in_file, out_file)
+    #for i in range(16507):
+        #in_file =  'images/' + f'{i:05}' + '.png'
+        #out_file = '/home/data/' + f'{i:05}' + '.png'
+    download_blob('neutr_mosh_unpickled', 'poses_netruSMPL_CMU.npy', 'poses_netruSMPL_CMU.npy')
+    download_blob('neutr_mosh_unpickled', 'shapes_netruSMPL_CMU.npy', 'shapes_netruSMPL_CMU.npy')
 if __name__ == '__main__':
     main()
