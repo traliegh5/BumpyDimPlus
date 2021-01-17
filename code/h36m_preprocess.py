@@ -1,13 +1,16 @@
-from numpy.lib.ufunclike import _fix_and_maybe_deprecate_out_named_y
+# from numpy.lib.ufunclike import _fix_and_maybe_deprecate_out_named_y
 import tensorflow as tf
 import numpy as np
 import cv2
 import os
-os.environ["CDF_LIB"] = "/Users/annaswanson/Documents/GitHub/BumpyDimPlus/env/lib/python3.7/site-packages/spacepy/pycdf/"
+os.environ["CDF_LIB"] = "~/CDF/lib"
 import glob
-from spacepy import pycdf
+import cdflib
+from os import mkdir
+# from spacepy import pycdf
 
 h36m_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/Human3.6M/"
+image_dir = os.path.join(h36m_dir, 'images/')
 
 
 '''
@@ -61,33 +64,44 @@ for subject in training_subjects:
     for seq in sequences:
         print(seq)
         seq_name = seq.split('/')[-1]
-        bbox_file = seq_name.replace(__old='.cdf', __new='.mat')
-        video_file = seq_name.replace(__old='.cdf', __new='.mp4')
-        print(seq_name)
+        bbox_file = seq_name.replace('.cdf', '.mat')
+        video_file = seq_name.replace('.cdf', '.mp4')
+        action, camera, _ = seq_name.split('.')
+        action = action.replace(' ', '.')
+        print('seq:', seq_name)
 
         # 3d poses (from ???)
-        poses = pycdf.CDF(seq)['Pose'][0]
-        print(poses)
+        poses = cdflib.CDF(seq)['Pose'][0]
+        # print('poses:', poses)
 
-        vid_cap = cv2.VideoCapture(video_path)
-
-        
+        vid_cap = cv2.VideoCapture(os.path.join(video_path, video_file))
 
         all_frames = np.shape(poses)[0]
-        frame_count = 0
+        frame_curr = 0
 
-        for frame in all_frames:
+        for fr in range(all_frames):
 
             while(True):
                 cont, frame = vid_cap.read()
 
                 if cont:
                     cv2.imshow('frame', frame)
-                    name = str(frame_count)
+
+                    if fr % 5 == 0:
+                        print('frame_curr:', frame_curr)
+                        img_name = '%s_%s.%s_%06d.png' % (subject, action, camera, frame_curr+1)
+                        img_file = os.path.join(image_dir, img_name)
+                        print ('Creating...' + img_file) 
+
+                        cv2.imwrite(img_file, frame)
+
+                    frame_curr += 1
 
                 else:
                     break
 
+            vid_cap.release() 
+            cv2.destroyAllWindows()
 
   
 # Function which take path as input and extract images of the video 
