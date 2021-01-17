@@ -179,7 +179,7 @@ def main():
         priorBatch=None
         feats=resNet(imBatch)
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
-        tf.keras.models.save_model(discriminator,genFilePath)
-        tf.keras.models.save_model(generator,discFilePath)
+        tf.keras.models.save_model(generator,genFilePath)
+        tf.keras.models.save_model(discriminator,discFilePath)
 if __name__ == '__main__':
     main()
