@@ -5,7 +5,7 @@ import random
 import math
 
 class Generator(tf.keras.Model):
-    def __init__(self,batch_size):
+    def __init__(self):
         """
         This model will contain code for the generator
         Set up all of the functions for batching!!!
@@ -19,7 +19,7 @@ class Generator(tf.keras.Model):
         self.dropout_rate=.5 #figure out what dropout rate to use. fine tuning?
         self.num_iterations=3
         self.SMPLnum=0
-        self.batch_size=batch_size
+        
 
         #TODO figure out args of resnet initialization, got to output right shape.
         
@@ -49,21 +49,21 @@ class Generator(tf.keras.Model):
         curr_est+=reg
         return curr_est
     
-    def init_param_est(self):
+    def init_param_est(self,batch_size):
         est=tf.zeros((1,self.SMPLnum))
         #initial scale is 0.9
         est[0,0]=0.9
         #The rest of the initializations are gotten from SMPL data, which needs to be figured out. 
         #returns the initial parameter estimates. 
         self.est_best=tf.Variable(est)
-        init_est=tf.tile(self.est_best,[self.batch_size,1]) 
+        init_est=tf.tile(self.est_best,[batch_size,1]) 
         return init_est
     def call(self,features):
         #use functions previously defined to extract features, the run said features.
         #output 85 dim vector, returned by iterative regression. 
         #make sure to output in correct shape for SMPL or STAR, then to
-        
-        curr_est=self.init_param_est()
+        batch_size=tf.shape(features)[0]
+        curr_est=self.init_param_est(batch_size)
         for i in range(self.num_iterations):
             curr_est=self.IEF(features,curr_est)
         
@@ -71,7 +71,7 @@ class Generator(tf.keras.Model):
     
 
 class Discriminator(tf.keras.Model):
-    def __init__(self,batch_size):
+    def __init__(self):
         """
         This model will contain code for the Discriminator
         """
@@ -79,7 +79,7 @@ class Discriminator(tf.keras.Model):
         self.num_joints = 23
         self.poseMatrixShape=[3,3]
         self.learning_rate=1e-3
-        self.batch_size=batch_size
+        
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         #ShapeDiscriminator
         self.shapeD1=tf.keras.layers.Dense(10,activation='relu')
@@ -112,7 +112,7 @@ class Discriminator(tf.keras.Model):
         #and  output a probability. Returns two values, pose discriminator out and 
         # shape discriminator out.
         """pose: Nx23x1x9
-        shape: 
+        shape:  N x 10
         
         """
         shapeDisc=self.shapeD1(shape)
