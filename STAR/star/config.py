@@ -22,7 +22,6 @@
 import os
 path_male_star = ''
 path_female_star = ''
-print(os.getcwd())
 path_neutral_star = '/home/gregory_barboy/data/star/model.npz'
 
 data_type = 'float32'

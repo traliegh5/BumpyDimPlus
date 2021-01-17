@@ -3,12 +3,12 @@ import tensorflow as tf
 
 def load_joints(lsp_dir, mpii_dir, h36_dir):
     # Load LSP Data
-    lsp_joints = load_joints(lsp_dir)
+    lsp_joints = read_joints(lsp_dir)
     # Load MPII Data
-    mpii_joints = load_joints(mpii_dir)
+    mpii_joints = read_joints(mpii_dir)
     return lsp_joints, mpii_joints
 
-def load_joints(dir):
+def read_joints(dir):
     f = open(dir + '/joints.txt', "r")
     contents = f.readlines()
     num_imgs = int(len(contents)/14)
