@@ -61,7 +61,7 @@ def make_bary_texels(side_len):
         
         # Scale up to iterate on pixel grid
         ctr = np.floor(ctr * side)
-        if(face_i % 5000 == 0):
+        if(face_i % 1000 == 0):
             print(face_i)
         for i in range(int(ctr[0]), int(ctr[0]) + int(np.floor(tri_bb_side * side))):
             for j in range(int(ctr[1]), int(ctr[1]) + int(np.floor(tri_bb_side * side))):
@@ -88,7 +88,7 @@ def make_bary_texels(side_len):
     # Get 3D points
     pts = []
     for face_i in range(len(f_uv)):
-        if(i in face_pts.keys()):
+        if(face_i in face_pts.keys()):
             p1_3d = np.array(pos_pts[f_pos[face_i][0] - 1])
             p2_3d = np.array(pos_pts[f_pos[face_i][1] - 1])
             p3_3d = np.array(pos_pts[f_pos[face_i][2] - 1])
@@ -100,16 +100,21 @@ def make_bary_texels(side_len):
                 pts.append(pt_3d)
     return face_pts, pts
 
+def save_points(pts):
+    f = open('pts.txt', "a+")
+    for i in range(len(pts)):
+        f.write(str(pts[i][0]) + ' ' + str(pts[i][1]) + ' ' + str(pts[i][2]) + '\n')
+    f.close()
+
 def main():
     filename_uv = 'uv_bary_dict'
-    filename_3d = '3d_pts'
+    filename_3d = 'pts'
 
-    face_pts, pts = make_bary_texels(100)
+    face_pts, pts = make_bary_texels(500)
     save_obj(face_pts, filename_uv)
     save_obj(pts, filename_3d )
-    
+    save_points(pts)
     uv = load_obj(filename_uv)
     pts = load_obj(filename_3d)
-    print("PTS: ", pts[:10])
 if __name__ == '__main__':
     main()
