@@ -7,7 +7,8 @@ import random
 import math
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-sys.path.append('home/BumpyDimPlus/STAR')
+print(os.getcwd())
+sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
 from star.tf.star import STAR, tf_rodrigues
 from data_loader import load_joints, load_and_process_image,load_cmu
 import matplotlib.pyplot as plt
