@@ -1,10 +1,18 @@
+from numpy.lib.ufunclike import _fix_and_maybe_deprecate_out_named_y
 import tensorflow as tf
 import numpy as np
 import cv2
 import os
+os.environ["CDF_LIB"] = "/Users/annaswanson/Documents/GitHub/BumpyDimPlus/env/lib/python3.7/site-packages/spacepy/pycdf/"
 import glob
+from spacepy import pycdf
 
-h36m_dir = ""
+h36m_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/Human3.6M/"
+
+
+'''
+Why do the joint schemes not agree ???
+'''
 
 h36m_joints = {
     0: 'Hip',
@@ -36,7 +44,8 @@ Left wrist, Neck, Head top
 h36m_in_lsp = [3, 2, 1, 6, 7, 8, 27, 26, 18, 19, 13, 15]
 
 
-training_subjects = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
+training_subjects=['S1']
+# training_subjects = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
 test_subject =  ['S2', 'S3', 'S4']
 
 # NOTE: S10 removed due to privacy concerns
@@ -49,22 +58,35 @@ for subject in training_subjects:
     sequences = glob.glob(os.path.join(pose_path, '*.cdf'))
     np.sort(sequences)
 
-    vid_cap = cv2.VideoCapture(video_path)
-
     for seq in sequences:
+        print(seq)
+        seq_name = seq.split('/')[-1]
+        bbox_file = seq_name.replace(__old='.cdf', __new='.mat')
+        video_file = seq_name.replace(__old='.cdf', __new='.mp4')
+        print(seq_name)
 
+        # 3d poses (from ???)
+        poses = pycdf.CDF(seq)['Pose'][0]
+        print(poses)
 
-    frame_count = 0
+        vid_cap = cv2.VideoCapture(video_path)
 
-    while(True):
+        
 
-        cont, img = vid_cap.read()
+        all_frames = np.shape(poses)[0]
+        frame_count = 0
 
-        if cont:
-            pass
+        for frame in all_frames:
 
-        else:
-            break
+            while(True):
+                cont, frame = vid_cap.read()
+
+                if cont:
+                    cv2.imshow('frame', frame)
+                    name = str(frame_count)
+
+                else:
+                    break
 
 
   
