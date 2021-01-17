@@ -1,5 +1,5 @@
+# Modeled after GCP documentation
 from google.cloud import storage
-
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
@@ -28,7 +28,7 @@ def main():
     #for i in range(16507):
         #in_file =  'images/' + f'{i:05}' + '.png'
         #out_file = '/home/data/' + f'{i:05}' + '.png'
-    download_blob('neutr_mosh_unpickled', 'poses_netruSMPL_CMU.npy', 'poses_netruSMPL_CMU.npy')
-    download_blob('neutr_mosh_unpickled', 'shapes_netruSMPL_CMU.npy', 'shapes_netruSMPL_CMU.npy')
+    download_blob('lsp_renum', 'joints.txt', 'lsp_joints')
+    download_blob('mpii_renum', 'joints.txt', 'mpii_joints')
 if __name__ == '__main__':
     main()
