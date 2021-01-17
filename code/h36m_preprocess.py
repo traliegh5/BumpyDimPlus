@@ -2,24 +2,69 @@ import tensorflow as tf
 import numpy as np
 import cv2
 import os
+import glob
 
 h36m_dir = ""
 
+h36m_joints = {
+    0: 'Hip',
+    1: 'rHip',
+    2: 'rKnee',
+    3: 'rFoot',
+    6: 'lHip',
+    7: 'lKnee',
+    8: 'lFoot',
+    12: 'Spine',
+    13: 'Neck',
+    14: 'Nose',
+    15: 'Head',
+    17: 'lShoulder',
+    18: 'lElbow',
+    19: 'lWrist',
+    25: 'rShoulder',
+    26: 'rElbow',
+    27: 'rWrist',
+}
+
+'''
+LSP:
+Right ankle, Right knee, Right hip, Left hip, Left knee, Left ankle,
+Right wrist, Right elbow, Right shoulder, Left shoulder, Left elbow,
+Left wrist, Neck, Head top
+'''
+
+h36m_in_lsp = [3, 2, 1, 6, 7, 8, 27, 26, 18, 19, 13, 15]
 
 
-vid_cap = cv2.VideoCapture(h36m_dir)
+training_subjects = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
+test_subject =  ['S2', 'S3', 'S4']
 
-frame_count = 0
+# NOTE: S10 removed due to privacy concerns
 
-while(True):
+for subject in training_subjects:
+    bbox_path = os.path.join(h36m_dir, subject, 'MySegmentsMat', 'ground_truth_bb')
+    pose_path = os.path.join(h36m_dir, subject, 'MyPoseFeatures', 'D3_Positions_mono')
+    video_path = os.path.join(h36m_dir, subject, 'Videos')
 
-    cont, img = vid_cap.read()
+    sequences = glob.glob(os.path.join(pose_path, '*.cdf'))
+    np.sort(sequences)
 
-    if cont:
-        pass
-    
-    else:
-        break
+    vid_cap = cv2.VideoCapture(video_path)
+
+    for seq in sequences:
+
+
+    frame_count = 0
+
+    while(True):
+
+        cont, img = vid_cap.read()
+
+        if cont:
+            pass
+
+        else:
+            break
 
 
   
@@ -38,7 +83,7 @@ def img_extract(path):
         if con:
             #giving names to each frame and printing while extracting
             name = str(frame_count)+'.jpg'
-            print('Capturing --- '+name)
+            print('Capturing --- '+ name)
   
             # Extracting images and saving with name 
             cv2.imwrite(name, frames) 
@@ -46,6 +91,6 @@ def img_extract(path):
         else:
             break
   
-path = r"C:\Users\KIRA\Desktop\case study\sample-mp4-file.mp4"
+# path = ""
 
-img_extract(path)
+# img_extract(path)
