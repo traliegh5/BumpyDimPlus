@@ -142,8 +142,8 @@ def main():
     #
     #  bookkeeping things, like put in loss printlines 
     batch_size=10
-    genFilePath="C:\\BumpyDimPlus\Models"+""
-    discFilePath="C:\\BumpyDimPlus\Models"+""
+    genFilePath=""
+    discFilePath=""
     if len(sys.arv)!=2:
         generator=Generator()
         discriminator=Discriminator()
