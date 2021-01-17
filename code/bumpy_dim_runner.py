@@ -177,7 +177,7 @@ def main():
     # Create Image datasets
     # Create a Dataset that contains all .png files
     # in a directory
-    dir_path = lsp_dir + '/*.png’
+    dir_path = lsp_dir + '/*.png'
     dataset = tf.data.Dataset.list_files(dir_path)
     # Apply a function that will read the contents of
     # each file into a tensor
