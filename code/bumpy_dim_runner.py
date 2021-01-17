@@ -156,7 +156,7 @@ def main():
     
     num_batches=None
     num_im_feats=2048
-    resNet=tf.keras.applications.ResNet50V2(include_top=False,weights='imagenet', classes=num_im_feats,classifier_activation='softmax')
+    resNet=tf.keras.applications.ResNet50V2(include_top=False,weights='imagenet', classes=num_im_feats,classifier_activation='softmax',compile=False)
 
    
     star=STAR(gender='neutral')
