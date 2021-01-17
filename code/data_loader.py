@@ -30,3 +30,9 @@ def load_and_process_image(file_path):
     # Convert image to normalized float [0, 1]
     image = tf.image.convert_image_dtype(image, tf.float32)
     return image
+
+def load_cmu(file_path):
+    poses = np.load('poses_netruSMPL_CMU.npy')
+    shapes = np.load('shapes_netruSMPL_CMU.npy')
+    return poses, shapes
+
