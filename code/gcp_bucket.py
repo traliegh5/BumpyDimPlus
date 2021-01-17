@@ -27,7 +27,7 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
 def main():
     in_file =  'images/' + f'{i:05}' + '.png'
     out_file = '~/data/' + f'{i:05}' + '.png'
-    for i in range(16507)
+    for i in range(16507):
     download_blob('mpii_renum', in_file, out_file)
 if __name__ == '__main__':
     main()
