@@ -7,7 +7,7 @@ import random
 import math
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-sys.path.append('D:\\Brown\\Senior\\CSCI_1470\\FINAL\\BumpyDimPlus\\STAR')
+sys.path.append('home/BumpyDimPlus/STAR')
 from star.tf.star import STAR, tf_rodrigues
 from data_loader import load_joints, load_and_process_image,load_cmu
 import matplotlib.pyplot as plt
@@ -162,8 +162,8 @@ def main():
     star=STAR(gender='neutral')
 
     # Load Joint annotations
-    lsp_dir = "home/data/lspimages"
-    mpii_dir = "home/data/mpiimages"
+    lsp_dir = "home/data/lsp_images"
+    mpii_dir = "home/data/mpii_images"
     #"D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
     h36_dir = ""
     neutr_mosh="home/data/cmu"
