@@ -70,11 +70,12 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         shape=params[:,75:]
         camera=params[:,:3]
         #INVESTIGATE inputs outputs of star. in particular, check camera. 
+        starOut, joint_out =star(pose,shape,camera)
+        joints= joint_out
         
-        joints=star(pose,shape,camera).Jtr
         J_lsp=lsp_STAR(joints)
         if not texture:
-            keypoints=orth_project(J_lsp)
+            keypoints=orth_project(J_lsp,camera)
 
 
 
@@ -134,6 +135,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         
         priorBatch=[poseBatch,shapeBatch]
         feats=resNet(imBatch)
+        
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
@@ -161,7 +163,7 @@ def main():
     
     num_batches=None
     num_im_feats=2048
-    resNet=tf.keras.applications.ResNet50V2(include_top=False,weights='imagenet', classes=num_im_feats,classifier_activation='softmax')
+    resNet=tf.keras.applications.ResNet50V2(include_top=False,weights='imagenet', classes=num_im_feats,classifier_activation='softmax',pooling='avg')
 
    
     star=STAR(gender='neutral')
