@@ -18,7 +18,7 @@ class Generator(tf.keras.Model):
         self.out_size=85
         self.dropout_rate=.5 #figure out what dropout rate to use. fine tuning?
         self.num_iterations=3
-        self.SMPLnum=0
+        self.SMPLnum=85
         
 
         #TODO figure out args of resnet initialization, got to output right shape.
