@@ -115,7 +115,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     return None 
 def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,texture):
     
-    
+    tf.cast(poses,tf.float32)
+    tf.cast(shapes,tf.float32)
     for i, batch in enumerate(images):
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
@@ -123,6 +124,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
 
         poseBatch=tf.reshape(poseBatch,[batch_size,24,3])
         #this reshape makes sense, but num_joints is 23... so one might have to be dropped
+        
         poseBatch=tf_rodrigues(poseBatch)
         shapeBatch=tf.gather(shapes[i:i+batch_size,:],indies,axis=0)
 
