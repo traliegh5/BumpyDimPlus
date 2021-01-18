@@ -34,19 +34,15 @@ def orth_project(PointBatch,camera):
     """
     camera=tf.reshape(camera,[-1,1,3])
     transPoints=PointBatch[:,:,:2]+camera[:,:,1:]
-    scaledPoints=transPoints*camera[:,:,0]
+    scaledPoints=transPoints*tf.squeeze(camera[:,:,0],axis=1)
     
-   
-
-
-
     return scaledPoints
 def lsp_STAR(joints):
     #batch size x 24 x 3
     #starresults.Jtr 
     #lsp-star=[(0,7),(1,4),(2,1),(3,0),(4,3),(5,6),(6,20),(7,18),(8,16),(9,15),(10,17),(11,19),(12,11),(13,14)]
     joints=tf.transpose(joints,perm=[0,2,1])
-    H=np.ones((24,19))
+    H=np.ones((24,14))
     #the last joint (number 13) is one we might want to leave out. 
     b=[(7,4,1,0,3,6,20,18,16,15,17,19,11,14),(0,1,2,3,4,5,6,7,8,9,10,11,12,13)]
     H[b]=1
