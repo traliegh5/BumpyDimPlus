@@ -114,9 +114,10 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
    
     return None 
 def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,texture):
-    
+    print(type(poses))
     tf.cast(poses,tf.float32)
     tf.cast(shapes,tf.float32)
+    print(type(poses))
     for i, batch in enumerate(images):
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
