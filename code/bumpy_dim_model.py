@@ -50,11 +50,12 @@ class Generator(tf.keras.Model):
         return curr_est
     
     def init_param_est(self,batch_size):
-        est=tf.zeros((1,self.SMPLnum))
+        est=np.zeros((1,self.SMPLnum))
         #initial scale is 0.9
         est[0,0]=0.9
         #The rest of the initializations are gotten from SMPL data, which needs to be figured out. 
         #returns the initial parameter estimates. 
+        est=tf.convert_to_tensor(est,tf.float32)
         self.est_best=tf.Variable(est)
         init_est=tf.tile(self.est_best,[batch_size,1]) 
         return init_est
