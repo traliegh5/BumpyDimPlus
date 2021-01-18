@@ -70,9 +70,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         shape=params[:,75:]
         camera=params[:,:3]
         #INVESTIGATE inputs outputs of star. in particular, check camera. 
-        starOut=star(pose,shape,camera)
-        print(tf.shape(starOut))
-        joints=starOut.Jtr
+        starOut, joint_out =star(pose,shape,camera)
+        joints= joint_out
         
         J_lsp=lsp_STAR(joints)
         if not texture:
