@@ -115,6 +115,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     return None 
 def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,texture):
     
+    tf.cast(poses,tf.float32)
+    tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
         batch_size=tf.shape(batch)[0]
@@ -123,6 +125,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
 
         poseBatch=tf.reshape(poseBatch,[batch_size,24,3])
         #this reshape makes sense, but num_joints is 23... so one might have to be dropped
+        
         poseBatch=tf_rodrigues(poseBatch)
         shapeBatch=tf.gather(shapes[i:i+batch_size,:],indies,axis=0)
 
@@ -171,6 +174,12 @@ def main():
     neutr_mosh="/home/gregory_barboy/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
+    
+    lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
+    mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
+    poses=tf.convert_to_tensor(poses,dtype=tf.float32)
+    shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
+    
     shapes=tf.reshape(shapes,[-1,10])
 
     mpii_batch_size=100
@@ -180,7 +189,7 @@ def main():
     # Create a Dataset that contains all .png files
     # in a directory
     dir_path = lsp_dir + '/*.png'
-    dataset = tf.data.Dataset.list_files(dir_path)
+    dataset = tf.data.Dataset.list_files(dir_path, shuffle=False)
     # Apply a function that will read the contents of
     # each file into a tensor
     dataset = dataset.map(map_func=load_and_process_image)
@@ -191,22 +200,18 @@ def main():
 
     # in a directory
     dir_path = mpii_dir + '/*.png'
-    dataset = tf.data.Dataset.list_files(img_mpii_names, shuffle=False)
+    dataset = tf.data.Dataset.list_files(dir_path, shuffle=False)
     dataset = dataset.map(map_func=load_and_process_image)
     dataset = dataset.batch(mpii_batch_size)
     mpii_ds = dataset
     
-    # lsp_ds = lsp_ds.prefetch(1)
+    lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
     #this is likelye not right, but eventually it should be the 
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
-    runGen =  h5py.File("RunGen.hdf5",'r+')
-    runDisc = h5py.File("RunDisc.hdf5",'r+')
-    shutil.move(runGen,ModelPath)
-    shutil.move(runDisc,ModelPath)
-
+    
     for epoch_num in range(epochs):
         runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
@@ -245,13 +250,9 @@ def main():
         
        
 
-        genFileName = "Generator_epoch_number:"+str(epoch_num)+".hdf5"
-        discFileName = "Discriminator_epoch_number:"+str(epoch_num)+".hdf5"
-        genFile = h5py.File(genFileName,'r+')
-        discFile = h5py.File(discFileName,'r+')
-        tf.keras.models.save_model(generator,genFile)
-        tf.keras.models.save_model(discriminator,discFile)
-        shutil.move(genFile,ModelPath)
-        shutil.move(discFile,ModelPath)
+        
+        tf.keras.models.save_model(generator,ModelPath)
+        tf.keras.models.save_model(discriminator,ModelPath)
+        
 if __name__ == '__main__':
     main()

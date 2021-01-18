@@ -33,7 +33,7 @@ def load_and_process_image(file_path):
     return image
 
 def load_cmu(file_path):
-    poses = np.load('poses_netruSMPL_CMU.npy')
-    shapes = np.load('shapes_netruSMPL_CMU.npy')
+    poses = np.load(file_path + '/poses_netruSMPL_CMU.npy')
+    shapes = np.load(file_path + '/shapes_netruSMPL_CMU.npy')
     return poses, shapes
 
