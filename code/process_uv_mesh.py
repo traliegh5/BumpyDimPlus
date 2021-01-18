@@ -25,10 +25,10 @@ def getBary(face, pt):
     uv_coords = np.array([u, v])
     return uv_coords
 
-def make_bary_texels(side_len):
+def make_bary_texels(side_len, filename):
     side = side_len
     # Parse .obj for UV texture info/geometry info
-    f = open("D:\Brown\Senior\CSCI_1470\FINAL\smpl_UV\SMPL_UV_NEUTR.obj", "r")
+    f = open(filename, "r")
 
     uv_pts = []
     pos_pts = []
@@ -107,10 +107,12 @@ def save_points(pts):
     f.close()
 
 def main():
-    filename_uv = 'uv_bary_dict'
-    filename_3d = 'pts'
+    working_dir = "D:\Brown\Senior\CSCI_1470\FINAL\smpl_UV"
+    side = 500
+    filename_obj = working_dir + '\SMPL_UV_NEUTR.obj'
+    filename_uv = working_dir + '\uv_bary'
 
-    face_pts, pts = make_bary_texels(500)
+    face_pts = make_bary_texels(side, filename_obj)
     save_obj(face_pts, filename_uv)
     save_obj(pts, filename_3d )
     save_points(pts)

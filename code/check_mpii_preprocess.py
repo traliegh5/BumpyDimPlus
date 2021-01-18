@@ -4,9 +4,9 @@ from skimage import io, img_as_ubyte, img_as_float32
 from os.path import join
 import numpy as np
 
-index_to_check = 16100
-image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII"
-img = mpimg.imread(image_dir + '/cropped_mpii/' + str(index_to_check) + '.png')
+index_to_check = 9800
+image_dir = "D://Brown//Senior//CSCI_1470//FINAL//test_lsp/"
+img = mpimg.imread(image_dir + 'f{index_to_check:05}' + '.png')
 
 f = open(image_dir + '/joints.txt', "r")
 contents = f.readlines()
