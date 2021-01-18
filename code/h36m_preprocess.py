@@ -226,7 +226,7 @@ def img_extract(path):
             frame_count = frame_count + 1
         else:
             break
-  
+
 # path = ""
 
 # img_extract(path)
