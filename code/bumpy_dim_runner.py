@@ -114,10 +114,10 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
    
     return None 
 def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,texture):
-    print(type(poses))
+    
     tf.cast(poses,tf.float32)
     tf.cast(shapes,tf.float32)
-    print(type(poses))
+    
     for i, batch in enumerate(images):
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
@@ -174,6 +174,12 @@ def main():
     neutr_mosh="/home/gregory_barboy/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
+    
+    lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
+    mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
+    poses=tf.convert_to_tensor(poses,dtype=tf.float32)
+    shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
+    
     shapes=tf.reshape(shapes,[-1,10])
 
     mpii_batch_size=100
