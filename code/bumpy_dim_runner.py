@@ -196,7 +196,7 @@ def main():
     dataset = dataset.batch(mpii_batch_size)
     mpii_ds = dataset
     
-    # lsp_ds = lsp_ds.prefetch(1)
+    lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
     # Iterate over dataset
     #this is likelye not right, but eventually it should be the 
