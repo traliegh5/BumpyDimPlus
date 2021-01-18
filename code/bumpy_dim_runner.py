@@ -180,7 +180,7 @@ def main():
     # Create a Dataset that contains all .png files
     # in a directory
     dir_path = lsp_dir + '/*.png'
-    dataset = tf.data.Dataset.list_files(dir_path)
+    dataset = tf.data.Dataset.list_files(dir_path, shuffle=False)
     # Apply a function that will read the contents of
     # each file into a tensor
     dataset = dataset.map(map_func=load_and_process_image)
@@ -191,7 +191,7 @@ def main():
 
     # in a directory
     dir_path = mpii_dir + '/*.png'
-    dataset = tf.data.Dataset.list_files(img_mpii_names, shuffle=False)
+    dataset = tf.data.Dataset.list_files(dir_path, shuffle=False)
     dataset = dataset.map(map_func=load_and_process_image)
     dataset = dataset.batch(mpii_batch_size)
     mpii_ds = dataset
