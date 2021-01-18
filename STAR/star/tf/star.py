@@ -207,4 +207,4 @@ class STAR(object):
         result.pose =  pose
         result.trans = trans
         result.betas = betas
-        return result
+        return result, result.Jtr
