@@ -202,11 +202,7 @@ def main():
     #this is likelye not right, but eventually it should be the 
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
-    runGen =  h5py.File("RunGen.hdf5",'r+')
-    runDisc = h5py.File("RunDisc.hdf5",'r+')
-    shutil.move(runGen,ModelPath)
-    shutil.move(runDisc,ModelPath)
-
+    
     for epoch_num in range(epochs):
         runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
@@ -245,13 +241,9 @@ def main():
         
        
 
-        genFileName = "Generator_epoch_number:"+str(epoch_num)+".hdf5"
-        discFileName = "Discriminator_epoch_number:"+str(epoch_num)+".hdf5"
-        genFile = h5py.File(genFileName,'r+')
-        discFile = h5py.File(discFileName,'r+')
-        tf.keras.models.save_model(generator,genFile)
-        tf.keras.models.save_model(discriminator,discFile)
-        shutil.move(genFile,ModelPath)
-        shutil.move(discFile,ModelPath)
+        
+        tf.keras.models.save_model(generator,ModelPath)
+        tf.keras.models.save_model(discriminator,ModelPath)
+        
 if __name__ == '__main__':
     main()
