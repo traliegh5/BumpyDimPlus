@@ -30,7 +30,7 @@ images = []
 joints= []
 
 pad = 100
-bbox_pad = 40
+bbox_pad = 30
 im_size = 224
 
 h36m_joints = {
