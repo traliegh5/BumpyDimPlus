@@ -164,7 +164,7 @@ def saveMesh(params):
     shape=params[:,75:]
     camera=params[:,:3]
     star = STAR(gender='neutral')
-    m = star(pose,betas,trans)
+    m = star(pose,shape,camera)
 
     outmesh_path = './test_smpl.obj'
     with open( outmesh_path, 'w') as fp:
