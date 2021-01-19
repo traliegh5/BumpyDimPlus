@@ -162,6 +162,9 @@ def main():
     #for loops for training batches and for  training epochs. 
     #
     #  bookkeeping things, like put in loss printlines 
+    
+    
+    
     batch_size=10
     genFilePath=""
     discFilePath=""
@@ -191,7 +194,16 @@ def main():
         print("Initializing discriminator from scratch.")    
     save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
     save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
+    
+    if len(sys.argv) == 2:
+        im_path=sys.argv[1]
+         
+		
 
+	# Change this to "True" to turn on the attention matrix visualization.
+	# You should turn this on once you feel your code is working.
+	# Note that it is designed to work with transformers that have single attention heads.
+	
         # tf.saved_model.save(generator,ModelPath)
         # tf.saved_model.save(discriminator,ModelPath)
         # generator.save("my_Gen")
