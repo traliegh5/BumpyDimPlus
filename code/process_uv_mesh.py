@@ -1,6 +1,15 @@
 import numpy as np
 import pickle
 
+## FOR TESTING
+from utilities import map
+import sys, os
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+sys.path.append('D:\Brown\Senior\CSCI_1470\FINAL\FOR_TESTING\STAR')
+from star.tf.star import STAR, tf_rodrigues
+import tensorflow as tf
+
 def save_obj(obj, name ):
     with open(name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
@@ -98,7 +107,15 @@ def make_bary_texels(side_len, filename):
             for uv in range(len(uvs)):
                 pt_3d = getPos(face_3d, uvs[uv])
                 pts.append(pt_3d)
-    return face_pts, pts
+
+    bary_face_map = []
+    for face in face_pts.keys():
+        uvs = face_pts[face_i]
+        for uv in range(len(uvs)):
+            entry = [face, uvs[uv][0], uvs[uv][1]]
+            bary_face_map.append(entry)
+    bary_face_map = np.array(bary_face_map)
+    return bary_face_map
 
 def save_points(pts):
     f = open('pts.txt', "a+")
@@ -110,13 +127,22 @@ def main():
     working_dir = "D:\Brown\Senior\CSCI_1470\FINAL\smpl_UV"
     side = 500
     filename_obj = working_dir + '\SMPL_UV_NEUTR.obj'
-    filename_uv = working_dir + '\uv_bary'
+    filename_bary = working_dir + "\\uv_bary"
 
     face_pts = make_bary_texels(side, filename_obj)
-    save_obj(face_pts, filename_uv)
-    save_obj(pts, filename_3d )
-    save_points(pts)
-    uv = load_obj(filename_uv)
-    pts = load_obj(filename_3d)
+    save_obj(face_pts, filename_bary)
+
+    #### For Testing Preprocess
+    # uv = load_obj(filename_bary)
+    # image_dir = "D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
+    # image = mpimg.imread(image_dir + '//05681.png')
+    # star = STAR(gender='neutral')
+    # trans = tf.constant(np.random.rand(1,3), dtype=tf.float32)
+    # pose = tf.constant(np.zeros((1,72)),dtype=tf.float32)
+    # betas = tf.constant(np.zeros((1,10)),dtype=tf.float32)
+    # m = star(pose,betas,trans)
+
+    # bary_map = tf.convert_to_tensor(np.array(uv), dtype=tf.float32)
+    # out_img = map(m[0], tf.convert_to_tensor(star.f, dtype=tf.int32), bary_map, image, trans)
 if __name__ == '__main__':
     main()

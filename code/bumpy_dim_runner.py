@@ -59,6 +59,7 @@ def texture_loss():
     and have one batch be comprised of images that have consistant texture (ie videos or consecutive images)
     
     """
+
     
     return None 
 
