@@ -72,6 +72,8 @@ test_subject =  ['S2', 'S3', 'S4']
 
 # NOTE: S10 removed due to privacy concerns
 
+chosen_sequences = ['WalkingDog 1.60457274', 'Greeting 1.55011271', 'Posing.55011271',
+        'Discussion 1.54138969', 'TakingPhoto.54138969']
 
 
 for subject in training_subjects:
@@ -83,6 +85,14 @@ for subject in training_subjects:
     np.sort(sequences)
 
     print(len(sequences))
+
+    for cs in chosen_sequences:
+        cs_path = os.path.join(h36m_dir, subject + '_cropped', cs)
+
+        if not os.path.isdir(cs_path):
+            os.mkdir(cs_path)
+
+    
 
     # start_index = 0
     # end_index = 25000
@@ -106,6 +116,9 @@ for subject in training_subjects:
     #         i_joints[j] = np.array([x, y])
     #     joints.append(i_joints)
 
+    print(sequences)
+
+    frame_curr = 0
 
     for seq in sequences:
         # print(seq)
@@ -116,6 +129,21 @@ for subject in training_subjects:
         action = action.replace(' ', '_')
         # print('seq:', seq_name)
 
+        # print(action, camera)
+
+        cs = seq_name
+
+        # print(cs)
+
+        # print(cs[(len(cs) - 4):len(cs)])
+
+        print(cs[:(len(cs) - 4)])
+
+        act = cs[:(len(cs) - 4)]
+
+        if act not in chosen_sequences:
+            continue
+
         # 2d poses
         poses = cdflib.CDF(seq)['Pose'][0]
         # print('poses:', poses)
@@ -125,8 +153,6 @@ for subject in training_subjects:
         vid_cap = cv2.VideoCapture(os.path.join(video_path, video_file))
 
         all_frames = np.shape(poses)[0]
-        frame_curr = 0
-
         # print('all frames:', all_frames)
 
         for fr in range(all_frames):
@@ -259,14 +285,16 @@ for subject in training_subjects:
                         # plt.show()
 
                         print('frame_curr:', frame_curr)
-                        img_name = '%s_%s.%s_%06d.png' % (subject, action, camera, frame_curr+1)
-                        img_file = os.path.join(image_dir, img_name)
+                        # img_name = '%s-%s.%s-%06d.png' % (subject, action, camera, frame_curr)
+                        # img_name = 'f{frame_curr:05}'
+                        img_file = os.path.join(h36m_dir, subject + '_cropped', act, f'{frame_curr:05}' + '.png')
                         print ('Creating...' + img_file) 
-
+                        
                         cv2.imwrite(img_file, padded_frame)
 
                         #Save 14 Joints to annotation file
-                        joint_file_name = image_dir + "/joints.txt"
+                        joint_file_name = os.path.join(h36m_dir, subject + '_cropped', act, 'joints.txt')
+                        # joint_file_name = image_dir + "/joints.txt"
                         f = open(joint_file_name, "a+")
 
                         lsp_annots[:,0] += pad
@@ -278,8 +306,8 @@ for subject in training_subjects:
                             f.write(str(lsp_annots[i][0]) + ' ' + str(lsp_annots[i][1]) + '\n')
                         f.close()
 
-                        images.append(img_name)
-                        joints.append(lsp_annots)
+                        # images.append(img_name)
+                        # joints.append(lsp_annots)
 
                     frame_curr += 1
 
