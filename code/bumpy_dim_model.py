@@ -97,7 +97,7 @@ class Discriminator(tf.keras.Model):
         #individual joint discriminators
         temp=[]
         for i in range(self.num_joints):
-            temp.append(tf.keras.layers.Dense(1,activation='softmax'))
+            temp.append(tf.keras.layers.Dense(1,activation=None))
         self.jointDiscList=temp
 
 
@@ -141,6 +141,7 @@ class Discriminator(tf.keras.Model):
         
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) """
+        shapeDisc=tf.squeeze(shapeDisc)
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],0)
         #Discs shape: Nx(23+1+1)
         return discs
