@@ -112,6 +112,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         if not texture:
             repLoss=reprojLoss(labelBatch,keypoints)
 
+        print(repLoss.shape)
         # make texture maps from meshes(from keypoints) 
         # make visibility mask 
         # input maps and mask into texture loss function
