@@ -117,9 +117,8 @@ class Discriminator(tf.keras.Model):
         
         """
 
-        print("THIS is the LAYER:",self.poseOut.get_weights()[0])
-        print("this is the d1 layer",self.poseD1.get_weights()[0])
-        print("this our other dense one layer:",self.shapeOut['weights']
+        
+       
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
@@ -145,7 +144,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=self.poseD2(allPoseDisc)
         #print("allPoseDisc after D2:",allPoseDisc)
         allPoseDisc=self.poseOut(allPoseDisc)
-        #print("allPoseDisc after poseOut:",allPoseDisc)
+        print("allPoseDisc after poseOut:",allPoseDisc)
         
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) """
