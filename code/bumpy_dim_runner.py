@@ -175,7 +175,7 @@ def saveMesh(params):
             fp.write( 'f %d %d %d\n' %  (f[0], f[1], f[2]) )
     ## Print message
     print('..Output mesh saved to: ', outmesh_path)
-    
+
 def main():
     #todo: initilize models with batch size params
     #load data,
@@ -240,6 +240,7 @@ def main():
     if len(sys.argv) == 2:
         im_path=sys.argv[1]
         image = load_and_process_image(im_path)
+        image = tf.reshape([1,224,224,3])
         feats=resNet(image)
         params=generator(feats)
         saveMesh(params)
