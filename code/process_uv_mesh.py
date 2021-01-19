@@ -125,7 +125,7 @@ def save_points(pts):
 
 def main():
     working_dir = "D:\Brown\Senior\CSCI_1470\FINAL\smpl_UV"
-    side = 500
+    side = 1024
     filename_obj = working_dir + '\SMPL_UV_NEUTR.obj'
     filename_bary = working_dir + "\\uv_bary"
 
