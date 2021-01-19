@@ -74,13 +74,10 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         starOut, joint_out =star(pose,shape,camera)
         joints= joint_out
         
-        print(joint_out)
         J_lsp=lsp_STAR(joints)
         keypoints = None
         if not texture:
             keypoints=orth_project(J_lsp,camera)
-
-        print(keypoints)
 
         #19joints=reduceJoints(joints)
         #keypoints=project(19joints,camera)
@@ -103,7 +100,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         pose=tf.reshape(pose,[-1,23,1,9])
         
         fakeDisc=discriminator(pose,shape)
+        print("FAKE DISC: ", fakeDisc)
         advLossGen=genLoss(fakeDisc)
+        print("Adv gen: ", advLossGen)
         advLossDisc=discLoss(realDisc,fakeDisc)
         if not texture:
             repLoss=reprojLoss(labelBatch,keypoints)
