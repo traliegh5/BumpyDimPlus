@@ -67,7 +67,6 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
     with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
-        print(tf.shape(params))
         pose=params[:,3:75]
         shape=params[:,75:]
         camera=params[:,:3]
@@ -105,7 +104,6 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
-        print(tf.shape(advLossDisc))
         if not texture:
             repLoss=reprojLoss(labelBatch,keypoints)
 
@@ -116,11 +114,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             texLoss=texture_loss()
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
-            print("advGenLoss",advLossGen)
-            print("repLoss",repLoss)
             totalGenLoss=tf.concat([advLossGen,repLoss],0)
             totalGenLoss=tf.math.reduce_sum(totalGenLoss)
-            print("totalGenLoss",totalGenLoss)
     
     print(advLossDisc)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
@@ -138,7 +133,6 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
-        print(batch[0])
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
         poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
@@ -153,9 +147,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         joint_batch=tf.gather(joints[i:i+batch_size,:,:],indies,axis=0)
         
         priorBatch=[poseBatch,shapeBatch]
-        print("image batch shape",imBatch)
         feats=resNet(imBatch)
-        print("feats",feats)
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
