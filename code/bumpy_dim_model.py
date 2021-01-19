@@ -58,7 +58,6 @@ class Generator(tf.keras.Model):
         est=tf.convert_to_tensor(est,tf.float32)
         self.est_best=tf.Variable(est)
         init_est=tf.tile(self.est_best,[batch_size,1]) 
-        print("init est",tf.shape(init_est))
         return init_est
     def call(self,features):
         #use functions previously defined to extract features, the run said features.
@@ -116,15 +115,12 @@ class Discriminator(tf.keras.Model):
         shape:  N x 10
         
         """
-        
-        print(tf.shape(poses),tf.shape(shape))
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
         
         poseEmb=self.pE1(poses)
         poseEmb=self.pE2(poseEmb)
-        print(tf.shape(poseEmb))
         poseDisc=[]
         for i in range(self.num_joints):
             #print(poseEmb[:,i,:,:])
