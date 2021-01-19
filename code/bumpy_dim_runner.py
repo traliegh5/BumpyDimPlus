@@ -168,23 +168,41 @@ def main():
     genFilePath=""
     discFilePath=""
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
-    if len(sys.argv)!=2:
-        generator=Generator()
-        discriminator=Discriminator()
-        generator(tf.random.uniform([10,2048]))
-        discriminator(tf.random.uniform([10,23,1,9]),tf.random.uniform([10,10]))
-        genCheck=tf.train.Checkpoint(generator)
-        discCheck=tf.train.Checkpoint(discriminator)
-        save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
-        save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
+    genPath ='/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints'
+    discPath ='/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints'
+
+   
+    generator=Generator()
+    discriminator=Discriminator()
+    generator(tf.random.uniform([10,2048]))
+    discriminator(tf.random.uniform([10,23,1,9]),tf.random.uniform([10,10]))
+    
+    genCheck=tf.train.Checkpoint(generator)
+    discCheck=tf.train.Checkpoint(discriminator)
+    genMan=tf.train.CheckpointManager(genCheck,genPath,max_to_keep=3)
+    discMan=tf.train.CheckpointManager(discCheck,discPath,max_to_keep=3)
+    genCheck.restore(genMan.latest_checkpoint)
+    discCheck.restore(discMan.latest_checkpoint)
+    if genMan.latest_checkpoint:
+        print("Restored generator from {}".format(genMan.latest_checkpoint))
+    else:
+        print("Initializing generator from scratch.")
+    if discMan.latest_checkpoint:
+        print("Restored discriminator from {}".format(discMan.latest_checkpoint))
+    else:
+        print("Initializing discriminator from scratch.")    
+    save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
+    save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
 
         # tf.saved_model.save(generator,ModelPath)
         # tf.saved_model.save(discriminator,ModelPath)
         # generator.save("my_Gen")
         # discriminator.save("my_Disc")
-    elif sys.argv[1]=="Load":
-        generator=tf.keras.models.load_model(genFilePath)
-        discriminator=tf.keras.models.load_model(discFilePath)
+    
+        # genCheck.read(genPath, options=options)
+        # discCheck.read()
+        # genCheck.restore(save_gen)
+        # discCheck.restore(save_disc)
 
 
     epochs=1
@@ -252,6 +270,16 @@ def main():
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
+        genCheck.step.assign_add(1)
+        discCheck.step.assign_add(1)
+        if int(genCheck.step)%10==0:
+            genSavePath=genMan.save()
+            discSavePath=discMan.save()
+            print("Saved checkpoint for step {}: {}".format(int(genCheck.step), genSavePath))
+            print("Saved checkpoint for step {}: {}".format(int(discCheck.step), discSavePath))
+            
+        # save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
+        # save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
         #  for i, batch in enumerate(lsp_ds):
 
         # for i, batch in enumerate(mpii_ds):
@@ -285,9 +313,9 @@ def main():
         
         
        
-
-        generator.save('my_Gen')
-        discriminator.save('my_Disc')
+        
+        # generator.save('my_Gen')
+        # discriminator.save('my_Disc')
         # genSavePath=os.path.join(ModelPath,"generator/1/")
         # discSavePath=os.path.join(ModelPath,"discriminator/1/")
         # tf.keras.models.save_model(generator,genSavePath,save_format='tf')
