@@ -267,12 +267,12 @@ def main():
         
        
 
-        # generator.save(ModelPath+"/running_gen.hdf5")
-        # discriminator.save(ModelPath+"/running_disc.hdf5")
-        genSavePath=os.path.join(ModelPath,"generator/1/")
-        discSavePath=os.path.join(ModelPath,"discriminator/1/")
-        tf.keras.models.save_model(generator,genSavePath,save_format='tf')
-        tf.keras.models.save_model(discriminator,discSavePath,save_format='tf')
+        generator.save('my_Gen')
+        discriminator.save('my_Disc')
+        # genSavePath=os.path.join(ModelPath,"generator/1/")
+        # discSavePath=os.path.join(ModelPath,"discriminator/1/")
+        # tf.keras.models.save_model(generator,genSavePath,save_format='tf')
+        # tf.keras.models.save_model(discriminator,discSavePath,save_format='tf')
         
 if __name__ == '__main__':
     main()
