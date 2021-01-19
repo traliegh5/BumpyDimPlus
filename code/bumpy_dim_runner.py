@@ -121,6 +121,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             print("totalGenLoss",totalGenLoss)
     
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
+    print(totalGenLoss)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
