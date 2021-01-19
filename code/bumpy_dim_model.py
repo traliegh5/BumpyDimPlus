@@ -64,6 +64,7 @@ class Generator(tf.keras.Model):
         #use functions previously defined to extract features, the run said features.
         #output 85 dim vector, returned by iterative regression. 
         #make sure to output in correct shape for SMPL or STAR, then to
+        print("res feat shape",tf.shape(features))
         batch_size=tf.shape(features)[0]
         curr_est=self.init_param_est(batch_size)
         print("curr_est pre IEF",tf.shape(curr_est))

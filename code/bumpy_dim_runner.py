@@ -151,6 +151,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         joint_batch=tf.gather(joints[i:i+batch_size,:,:],indies,axis=0)
         
         priorBatch=[poseBatch,shapeBatch]
+        print("image batch shape",tf.shape(imBatch))
         feats=resNet(imBatch)
         
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
