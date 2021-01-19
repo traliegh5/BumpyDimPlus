@@ -75,6 +75,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         starOut, joint_out =star(pose,shape,camera)
         joints= joint_out
         
+        print(joint_out)
         J_lsp=lsp_STAR(joints)
         if not texture:
             keypoints=orth_project(J_lsp,camera)
@@ -152,7 +153,9 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         joint_batch=tf.gather(joints[i:i+batch_size,:,:],indies,axis=0)
         
         priorBatch=[poseBatch,shapeBatch]
+        print("image batch shape",imBatch)
         feats=resNet(imBatch)
+        print("feats",feats)
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)

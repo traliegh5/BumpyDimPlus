@@ -64,16 +64,12 @@ class Generator(tf.keras.Model):
         #use functions previously defined to extract features, the run said features.
         #output 85 dim vector, returned by iterative regression. 
         #make sure to output in correct shape for SMPL or STAR, then to
-        print(features)
-        print("res feat shape", tf.shape(features))
         batch_size=tf.shape(features)[0]
         curr_est=self.init_param_est(batch_size)
-        print("curr_est pre IEF",tf.shape(curr_est))
         for i in range(self.num_iterations):
             curr_est=self.IEF(features,curr_est)
-        print("curr_est post IEF",tf.shape(curr_est))
+
         return curr_est
-    
 
 class Discriminator(tf.keras.Model):
     def __init__(self):
