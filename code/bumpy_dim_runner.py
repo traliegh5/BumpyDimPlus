@@ -267,8 +267,8 @@ def main():
         
        
 
-        generator.save(ModelPath)
-        discriminator.save(ModelPath)
+        generator.save(ModelPath+"/running_gen.hdf5")
+        discriminator.save(ModelPath+"/running_disc.hdf5")
         # tf.keras.models.save_model(generator,ModelPath)
         # tf.keras.models.save_model(discriminator,ModelPath)
         
