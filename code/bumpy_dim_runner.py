@@ -59,6 +59,7 @@ def texture_loss():
     and have one batch be comprised of images that have consistant texture (ie videos or consecutive images)
     
     """
+
     
     return None 
 
@@ -90,7 +91,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
 
         realShape=meshBatch[1]
         realPose=meshBatch[0]
-        realDisc=discriminator(realShape,realPose)
+        realDisc=discriminator(realPose,realShape)
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
