@@ -90,7 +90,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         #assuming meshBatch is the same shape as the params...
 
         realShape=meshBatch[1]
-        realPose=meshBatch[0]
+        realPose=meshBatch[0][:,1:,:,:]
+        realPose=tf.reshape(realPose,[-1,23,1,9])
+        
         realDisc=discriminator(realPose,realShape)
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
