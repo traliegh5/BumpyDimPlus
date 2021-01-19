@@ -117,9 +117,9 @@ class Discriminator(tf.keras.Model):
         
         """
 
-        print("THIS is the LAYER:",self.poseOut.get_weights())
-        print("this is the d1 layer",self.poseD1.get_weights())
-        print("this our other dense one layer:",self.shapeOut.get_weights())
+        print("THIS is the LAYER:",self.poseOut.get_weights()[0])
+        print("this is the d1 layer",self.poseD1.get_weights()[0])
+        print("this our other dense one layer:",self.shapeOut.get_weights()[0])
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
