@@ -100,10 +100,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         pose=tf.reshape(pose,[-1,23,1,9])
         
         fakeDisc=discriminator(pose,shape)
-        print("Pose: ", pose)
-        print("Shape: ", shape)
+        print(fakeDisc)
+        print(realDisc)
         advLossGen=genLoss(fakeDisc)
-        print("Adv gen: ", advLossGen)
         advLossDisc=discLoss(realDisc,fakeDisc)
         if not texture:
             repLoss=reprojLoss(labelBatch,keypoints)
