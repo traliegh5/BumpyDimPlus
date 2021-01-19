@@ -118,6 +118,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=advLossGen
             totalGenLoss= 0.5 * advLossGen + 0.3 * repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+    print("Gen: ", totalGenLoss)
+    print("Disc: ", advLossDisc)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
     
@@ -156,6 +158,21 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         #     tf.keras.models.save_model(discriminator,runDisc)
     
     return None 
+## Obj download code Adapted from MPI Star/SMPL demo code
+def saveMesh(trans, pose, betas):
+    star = STAR(gender='neutral')
+    m = star(pose,betas,trans)
+
+    outmesh_path = './test_smpl.obj'
+    with open( outmesh_path, 'w') as fp:
+        for v in m[0]:
+            fp.write( 'v %f %f %f\n' % ( v[0], v[1], v[2]) )
+
+        for f in star.f+1: # Faces are 1-based, not 0-based in obj files
+            fp.write( 'f %d %d %d\n' %  (f[0], f[1], f[2]) )
+
+## Print message
+print('..Output mesh saved to: ', outmesh_path)
 def main():
     #todo: initilize models with batch size params
     #load data,
