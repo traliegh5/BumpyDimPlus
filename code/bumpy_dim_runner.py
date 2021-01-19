@@ -267,10 +267,10 @@ def main():
         
        
 
-        generator.save(ModelPath+"/running_gen.hdf5")
-        discriminator.save(ModelPath+"/running_disc.hdf5")
-        # tf.keras.models.save_model(generator,ModelPath)
-        # tf.keras.models.save_model(discriminator,ModelPath)
+        # generator.save(ModelPath+"/running_gen.hdf5")
+        # discriminator.save(ModelPath+"/running_disc.hdf5")
+        tf.keras.models.save_model(generator,ModelPath,save_format='tf')
+        tf.keras.models.save_model(discriminator,ModelPath,save_format='tf')
         
 if __name__ == '__main__':
     main()
