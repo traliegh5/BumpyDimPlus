@@ -141,7 +141,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=tf.reshape(allPoseDisc,[-1,1])
         shapeDisc=tf.reshape(shapeDisc,[-1,1])
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
-        
+        print(tf.shape(discs))
         #Discs shape: Nx(23+1+1)
         return discs
    
