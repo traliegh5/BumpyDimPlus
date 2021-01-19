@@ -172,7 +172,7 @@ for subject in training_subjects:
                         padded_img = np.pad(frame, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
                         imgplot = plt.imshow(padded_img)
 
-                        annots = poses[frame_curr]
+                        annots = poses[frame_curr-1]
 
                         # Why does this only work with frame_curr ???
 
