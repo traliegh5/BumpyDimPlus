@@ -18,14 +18,20 @@ def reprojLoss(keys,predKeys):
     """keys: N x K x 3
       predKeys: N x K x 2
       """
+    print("keys:",keys)
+    print("predkeys:",predKeys)
     keys=tf.reshape(keys,(-1,3))
     predKeys=tf.reshape(predKeys,(-1,2))  
     visMask=keys[:,2]
+    print("visMask",visMask)
     dif=tf.math.subtract(keys[:,:2],predKeys)
+    print("dif:",dif)
     absDif=tf.math.abs(dif)
+    print("absdif",absDif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
+    print("maskAbsDif",maskAbsDif)
     finloss=tf.reduce_sum(maskAbsDif)
-    
+    print("finloss",finloss)
     return finloss
 
 def discLoss(disReal,disFake):
@@ -91,14 +97,14 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         realShape=meshBatch[1]
         realPose=meshBatch[0][:,1:,:,:]
         realPose=tf.reshape(realPose,[-1,23,1,9])
-        print("realShape into Disc:",realShape)
+       
         realDisc=discriminator(realPose,realShape)
-        print("***********************")
+        
         pose=tf.reshape(pose, [-1, 24, 3])
         pose=tf_rodrigues(pose)
         pose=pose[:,1:,:,:]
         pose=tf.reshape(pose,[-1,23,1,9])
-        print("shape into disc:",shape)
+        
         fakeDisc=discriminator(pose,shape)
         
         advLossGen=genLoss(fakeDisc)
@@ -117,10 +123,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             # totalGenLoss=tf.concat([advLossGen,repLoss],0)
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     
-    print(advLossDisc)
+    
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
-    print(totalGenLoss)
+    
+
     
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
