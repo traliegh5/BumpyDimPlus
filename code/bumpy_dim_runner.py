@@ -91,17 +91,16 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         realShape=meshBatch[1]
         realPose=meshBatch[0][:,1:,:,:]
         realPose=tf.reshape(realPose,[-1,23,1,9])
-        
+        print("realShape into Disc:",realShape)
         realDisc=discriminator(realPose,realShape)
         print("***********************")
         pose=tf.reshape(pose, [-1, 24, 3])
         pose=tf_rodrigues(pose)
         pose=pose[:,1:,:,:]
         pose=tf.reshape(pose,[-1,23,1,9])
-        
+        print("shape into disc:",shape)
         fakeDisc=discriminator(pose,shape)
-        print(fakeDisc)
-        print(realDisc)
+        
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
         if not texture:
