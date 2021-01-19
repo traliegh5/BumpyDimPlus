@@ -152,9 +152,9 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         joint_batch=tf.gather(joints[i:i+batch_size,:,:],indies,axis=0)
         
         priorBatch=[poseBatch,shapeBatch]
-        print("image batch shape",tf.shape(imBatch))
+        print("image batch shape",imBatch)
         feats=resNet(imBatch)
-        
+        print("feats",feats)
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
