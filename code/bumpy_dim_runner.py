@@ -133,7 +133,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
-        if i % 10:
+        if i % 10 == 0:
             print("ON Batch: ", i)
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
@@ -227,7 +227,6 @@ def main():
     #this is likelye not right, but eventually it should be the 
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
-    
     for epoch_num in range(epochs):
         start = time.time()
         # runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
