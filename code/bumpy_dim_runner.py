@@ -76,7 +76,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         
         J_lsp=lsp_STAR(joints)
         if not texture:
-            keypoints=orth_project(J_lsp)
+            keypoints=orth_project(J_lsp,camera)
 
 
 
