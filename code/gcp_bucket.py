@@ -33,10 +33,10 @@ def main():
     if not os.path.isdir(folder):
         os.mkdir('/home/gregory_barboy/data/' + folder)
     num_images = argv[2]
-    for i in range(num_images):
-        in_file = folder + '/' + f'{i:05}' + '.png'
-        out_file = '/home/gregory_barboy/data/' + folder + '/' + f'{i:05}' + '.png'
-        download_blob('h36m_processed', in_file, out_file)
-    download_blob('h36m_processed', 'joints.txt', 'joints.txt')
+    # for i in range(num_images):
+    #     in_file = folder + '/' + f'{i:05}' + '.png'
+    #     out_file = '/home/gregory_barboy/data/' + folder + '/' + f'{i:05}' + '.png'
+    #     download_blob('h36m_processed', in_file, out_file)
+    download_blob('h36m_processed', folder + '/' + 'joints.txt', folder + '/' + 'joints.txt')
 if __name__ == '__main__':
     main()
