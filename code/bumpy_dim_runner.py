@@ -27,7 +27,7 @@ def reprojLoss(keys,predKeys):
     dif=tf.math.subtract(keys[:,:2],predKeys)
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    finloss=tf.reduce_sum(maskAbsDif)
+    finloss=tf.reduce_mean(maskAbsDif)
     return finloss
 
 def discLoss(disReal,disFake):
@@ -116,8 +116,13 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
             totalGenLoss=advLossGen
-            totalGenLoss=advLossGen + repLoss
+            totalGenLoss= 0.5 * advLossGen + 0.5 * repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+
+    print("Gen: ", totalGenLoss)
+    print("Rep: ", repLoss)
+    print("DiscGen: ", advLossGen)
+    print("Disc: ", advLossDisc)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
     
