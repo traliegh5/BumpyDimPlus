@@ -116,7 +116,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
             totalGenLoss=advLossGen
-            totalGenLoss=advLossGen + repLoss
+            totalGenLoss= 0.5 * advLossGen + 0.5 * repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
 
     print("Gen: ", totalGenLoss)
