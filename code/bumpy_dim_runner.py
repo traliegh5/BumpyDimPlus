@@ -93,7 +93,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         realPose=tf.reshape(realPose,[-1,23,1,9])
         
         realDisc=discriminator(realPose,realShape)
-        
+        print("***********************")
         pose=tf.reshape(pose, [-1, 24, 3])
         pose=tf_rodrigues(pose)
         pose=pose[:,1:,:,:]
