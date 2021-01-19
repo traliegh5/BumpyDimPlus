@@ -119,12 +119,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss= 0.5 * advLossGen + 0.3 * repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
 
+    advLossDisc = 2.0 * advLossDisc
     print("Gen: ", totalGenLoss)
-    print("Rep: ", repLoss)
-    print("DiscGen: ", advLossGen)
     print("Disc: ", advLossDisc)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
-    gradDisc=discTape.gradient(advLossDisc * 0.5,discriminator.trainable_variables)
+    gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
     
 
     
