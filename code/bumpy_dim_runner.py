@@ -136,6 +136,8 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
+        if i % 10:
+            print("ON Batch: ", i)
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
         poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
@@ -231,11 +233,10 @@ def main():
     
     for epoch_num in range(epochs):
         start = time.time()
-        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        # runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
         end = time.time()
-        print("Epoch took %s minutes. nice!" %((end - start)/60.0))
-
+        print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
         #  for i, batch in enumerate(lsp_ds):
 
         # for i, batch in enumerate(mpii_ds):
