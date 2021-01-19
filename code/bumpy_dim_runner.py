@@ -268,9 +268,10 @@ def main():
         
        
 
-        
-        tf.keras.models.save_model(generator,ModelPath)
-        tf.keras.models.save_model(discriminator,ModelPath)
+        generator.save(ModelPath)
+        discriminator.save(ModelPath)
+        # tf.keras.models.save_model(generator,ModelPath)
+        # tf.keras.models.save_model(discriminator,ModelPath)
         
 if __name__ == '__main__':
     main()
