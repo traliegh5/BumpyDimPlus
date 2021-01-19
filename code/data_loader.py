@@ -24,12 +24,10 @@ def read_joints(dir):
 
 def load_and_process_image(file_path):
     # Load image
-    image = tf.io.decode_png(
-    tf.io.read_file(file_path),
-    channels=3)
+    image = tf.io.decode_png(tf.io.read_file(file_path),channels=3)
     # Convert image to normalized float [0, 1]
-    image = tf.image.convert_image_dtype(image, tf.float32)
-    image=tf.keras.applications.resnet.preprocess_input(image, data_format='channels_last')
+    image = tf.cast(image, tf.float32)
+    image=tf.keras.applications.resnet_v2.preprocess_input(image, data_format='channels_last')
     return image
 
 def load_cmu(file_path):
