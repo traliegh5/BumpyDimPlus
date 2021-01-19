@@ -128,8 +128,11 @@ class Discriminator(tf.keras.Model):
             #print(tf.shape(temp))
             poseDisc.append(temp)
         #print(tf.shape(poseDisc))
+        print("poseDisc:",poseDisc)
         poseDisc=tf.squeeze(tf.stack(poseDisc,axis=1))
+        print("poseDisc:",poseDisc)
         #print(tf.shape(poseDisc))
+        print("poseEmb:",poseEmb)
         poseEmb=self.flatten(poseEmb)
         allPoseDisc=self.poseD1(poseEmb)
         allPoseDisc=self.poseD2(allPoseDisc)
@@ -142,8 +145,8 @@ class Discriminator(tf.keras.Model):
         shapeDisc=tf.reshape(shapeDisc,[-1,1])
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
         print("allPoseDisc",allPoseDisc)
-        print("allShapeDisc",allShapeDisc)
-        print(discs)
+        print("allShapeDisc",shapeDisc)
+        print("discs",discs)
         #Discs shape: Nx(23+1+1)
         return discs
    
