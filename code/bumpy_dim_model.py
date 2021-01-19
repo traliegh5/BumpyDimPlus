@@ -105,7 +105,7 @@ class Discriminator(tf.keras.Model):
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
         self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
-        
+        print("THIS is the LAYER:",self.poseOut)
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
     def call(self,poses,shape):
@@ -116,7 +116,8 @@ class Discriminator(tf.keras.Model):
         shape:  N x 10
         
         """
-        print("THIS is the LAYER:",self.poseOut)
+
+        print("THIS is the LAYER:",self.poseOut.get_weights())
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
@@ -135,7 +136,7 @@ class Discriminator(tf.keras.Model):
         #print("poseDisc:",poseDisc)
         #print(tf.shape(poseDisc))
         #print("poseEmb pre flatten:",poseEmb)
-        #poseEmb=self.flatten(poseEmb)
+        poseEmb=self.flatten(poseEmb)
         #print("poseEmb pose flatten:",poseEmb)
         allPoseDisc=self.poseD1(poseEmb)
         #print("allPoseDisc after D1:",allPoseDisc)
@@ -150,9 +151,9 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=tf.reshape(allPoseDisc,[-1,1])
         shapeDisc=tf.reshape(shapeDisc,[-1,1])
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
-        # print("allPoseDisc",allPoseDisc)
-        # print("allShapeDisc",shapeDisc)
-        # print("discs",discs)
+        print("allPoseDisc",allPoseDisc)
+        print("allShapeDisc",shapeDisc)
+        print("discs",discs)
         #Discs shape: Nx(23+1+1)
         return discs
    
