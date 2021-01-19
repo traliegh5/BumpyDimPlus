@@ -173,8 +173,13 @@ def main():
         discriminator=Discriminator()
         generator(tf.random.uniform([10,2048]))
         discriminator(tf.random.uniform([10,23,1,9]),tf.random.uniform([10,10]))
-        tf.saved_model.save(generator,ModelPath)
-        tf.saved_model.save(discriminator,ModelPath)
+        genCheck=tf.train.Checkpoint(generator)
+        discCheck=tf.train.Checkpoint(discriminator)
+        save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
+        save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
+
+        # tf.saved_model.save(generator,ModelPath)
+        # tf.saved_model.save(discriminator,ModelPath)
         # generator.save("my_Gen")
         # discriminator.save("my_Disc")
     elif sys.argv[1]=="Load":
