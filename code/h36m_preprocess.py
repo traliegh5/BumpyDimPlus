@@ -85,7 +85,7 @@ chosen_sequences = ['WalkDog 1.60457274', #'Greeting 1.55011271', 'Posing.550112
 
 # chosen_sequences = ['WalkDog 1.60457274']
 
-# chosen_sequences = ['Directions.60457274']
+chosen_sequences = ['Directions 2.60457274']
 
 # chosen_sequences = ['Discussion 2.58860488', 'Directions.60457274']
 
@@ -99,7 +99,7 @@ for subject in training_subjects:
     sequences = glob.glob(os.path.join(pose_path, '*.cdf'))
     np.sort(sequences)
 
-    print(len(sequences))
+    # print(len(sequences))
 
     sub_path_cr = os.path.join(h36m_dir, subject + '_cropped')
 
