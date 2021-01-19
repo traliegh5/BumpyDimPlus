@@ -41,7 +41,7 @@ def discLoss(disReal,disFake):
     fakeLoss=tf.reduce_mean(tf.reduce_sum(fakeL,axis=1))
     realLoss=tf.reduce_mean(tf.reduce_sum(realL,axis=1))
     
-    return fakeLoss+realLoss
+    return tf.add(fakeLoss,realLoss
 
 def genLoss(disFake):
     """input: Nx(23+1+1)
@@ -67,6 +67,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
     with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
+        print(tf.shape(params))
         pose=params[:,3:75]
         shape=params[:,75:]
         camera=params[:,:3]
