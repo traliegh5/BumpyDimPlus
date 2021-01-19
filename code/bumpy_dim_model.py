@@ -58,6 +58,7 @@ class Generator(tf.keras.Model):
         est=tf.convert_to_tensor(est,tf.float32)
         self.est_best=tf.Variable(est)
         init_est=tf.tile(self.est_best,[batch_size,1]) 
+        print("init est",tf.shape(init_est))
         return init_est
     def call(self,features):
         #use functions previously defined to extract features, the run said features.
@@ -65,9 +66,10 @@ class Generator(tf.keras.Model):
         #make sure to output in correct shape for SMPL or STAR, then to
         batch_size=tf.shape(features)[0]
         curr_est=self.init_param_est(batch_size)
+        print("curr_est pre IEF",tf.shape(curr_est))
         for i in range(self.num_iterations):
             curr_est=self.IEF(features,curr_est)
-        
+        print("curr_est post IEF",tf.shape(curr_est))
         return curr_est
     
 
