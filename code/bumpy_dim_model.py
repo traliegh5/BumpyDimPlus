@@ -80,7 +80,7 @@ class Discriminator(tf.keras.Model):
         super(Discriminator, self).__init__()
         self.num_joints = 23
         self.poseMatrixShape=9
-        self.learning_rate=1e-4
+        self.learning_rate=1e-5
         
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
         #ShapeDiscriminator
