@@ -78,7 +78,7 @@ class Discriminator(tf.keras.Model):
         """
         super(Discriminator, self).__init__()
         self.num_joints = 23
-        self.poseMatrixShape=[3,3]
+        self.poseMatrixShape=9
         self.learning_rate=1e-3
         
         self.optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
@@ -89,8 +89,8 @@ class Discriminator(tf.keras.Model):
 
         #the pose embedding network, common to all pose discriminators.
         #this needs to be changed, to convolution because inputs are matices
-        self.pE1=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channels_last")
-        self.pE2=tf.keras.layers.Conv2D(32,(1,1),input_shape=self.poseMatrixShape,data_format="channels_last")
+        self.pE1=tf.keras.layers.Conv2D(32,(1,1),data_format="channels_last")
+        self.pE2=tf.keras.layers.Conv2D(32,(1,1),data_format="channels_last")
         #self.pe1=tf.keras.layers.Dense(32,activation='relu')
         #self.pe2=tf.keras.layers.Dense(32,activation='relu')
 
@@ -116,11 +116,12 @@ class Discriminator(tf.keras.Model):
         shape:  N x 10
         
         """
+        
         print(tf.shape(poses),tf.shape(shape))
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
-        poses=tf.reshape(poses,[-1,24,9])
+        
         poseEmb=self.pE1(poses)
         poseEmb=self.pE2(poseEmb)
         print(tf.shape(poseEmb))
