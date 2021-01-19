@@ -84,7 +84,7 @@ class Discriminator(tf.keras.Model):
         #ShapeDiscriminator
         self.shapeD1=tf.keras.layers.Dense(10,activation='relu')
         self.shapeD2=tf.keras.layers.Dense(5,activation='relu')
-        self.shapeOut=tf.keras.layers.Dense(1,activation='softmax')
+        self.shapeOut=tf.keras.layers.Dense(1,activation='sigmoid')
 
         #the pose embedding network, common to all pose discriminators.
         #this needs to be changed, to convolution because inputs are matices
@@ -104,8 +104,8 @@ class Discriminator(tf.keras.Model):
         self.flatten=tf.keras.layers.Flatten(data_format="channels_last")
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
-        self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
-        print("THIS is the LAYER:",self.poseOut)
+        self.poseOut=tf.keras.layers.Dense(1,activation='sigmoid')
+        
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
     def call(self,poses,shape):
@@ -117,7 +117,8 @@ class Discriminator(tf.keras.Model):
         
         """
 
-        print("THIS is the LAYER:",self.poseOut.get_weights())
+        
+       
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
@@ -143,7 +144,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=self.poseD2(allPoseDisc)
         #print("allPoseDisc after D2:",allPoseDisc)
         allPoseDisc=self.poseOut(allPoseDisc)
-        #print("allPoseDisc after poseOut:",allPoseDisc)
+        
         
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) """
@@ -151,9 +152,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=tf.reshape(allPoseDisc,[-1,1])
         shapeDisc=tf.reshape(shapeDisc,[-1,1])
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
-        print("allPoseDisc",allPoseDisc)
-        print("allShapeDisc",shapeDisc)
-        print("discs",discs)
+        
         #Discs shape: Nx(23+1+1)
         return discs
    

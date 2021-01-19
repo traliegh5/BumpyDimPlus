@@ -5,6 +5,7 @@ import tensorflow as tf
 import numpy as np
 import random
 import math
+import time
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
 sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
@@ -25,7 +26,6 @@ def reprojLoss(keys,predKeys):
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
     finloss=tf.reduce_sum(maskAbsDif)
-    
     return finloss
 
 def discLoss(disReal,disFake):
@@ -91,7 +91,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         realShape=meshBatch[1]
         realPose=meshBatch[0][:,1:,:,:]
         realPose=tf.reshape(realPose,[-1,23,1,9])
-        
+       
         realDisc=discriminator(realPose,realShape)
         
         pose=tf.reshape(pose, [-1, 24, 3])
@@ -100,8 +100,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         pose=tf.reshape(pose,[-1,23,1,9])
         
         fakeDisc=discriminator(pose,shape)
-        print(fakeDisc)
-        print(realDisc)
+        
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
         if not texture:
@@ -114,13 +113,14 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             texLoss=texture_loss()
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
-            totalGenLoss=tf.concat([advLossGen,repLoss],0)
-            totalGenLoss=tf.math.reduce_sum(totalGenLoss)
-    
-    print(advLossDisc)
-    gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
-    print(totalGenLoss)
+            totalGenLoss=advLossGen
+            totalGenLoss=advLossGen + repLoss
+            # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
+    gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
+    
+
+    
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
    
@@ -133,6 +133,8 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
+        if i % 10 == 0:
+            print("ON Batch: ", i)
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
         poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
@@ -188,7 +190,7 @@ def main():
     neutr_mosh="/home/gregory_barboy/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
-    
+    #FIX THE SHUFFLE!!!!!!
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
     mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
     poses=tf.convert_to_tensor(poses,dtype=tf.float32)
@@ -225,11 +227,12 @@ def main():
     #this is likelye not right, but eventually it should be the 
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
-    
     for epoch_num in range(epochs):
-        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        start = time.time()
+        # runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
-
+        end = time.time()
+        print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
         #  for i, batch in enumerate(lsp_ds):
 
         # for i, batch in enumerate(mpii_ds):
@@ -264,9 +267,10 @@ def main():
         
        
 
-        
-        tf.keras.models.save_model(generator,ModelPath)
-        tf.keras.models.save_model(discriminator,ModelPath)
+        generator.save(ModelPath)
+        discriminator.save(ModelPath)
+        # tf.keras.models.save_model(generator,ModelPath)
+        # tf.keras.models.save_model(discriminator,ModelPath)
         
 if __name__ == '__main__':
     main()
