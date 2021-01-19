@@ -42,7 +42,7 @@ def orth_project(PointBatch,camera):
     """
     camera=tf.reshape(camera,[-1,1,3])
     transPoints=PointBatch[:,:,:2]+camera[:,:,1:]
-    scaledPoints=tf.squeeze(camera[:,:,0],axis=1)*transPoints
+    scaledPoints=tf.reshape(camera[:,:,0],[-1,1,1])*transPoints
     
     return scaledPoints
 def lsp_STAR(joints):
