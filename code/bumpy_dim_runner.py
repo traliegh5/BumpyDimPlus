@@ -173,9 +173,9 @@ def saveMesh(params):
 
         for f in star.f+1: # Faces are 1-based, not 0-based in obj files
             fp.write( 'f %d %d %d\n' %  (f[0], f[1], f[2]) )
-
-## Print message
-print('..Output mesh saved to: ', outmesh_path)
+    ## Print message
+    print('..Output mesh saved to: ', outmesh_path)
+    
 def main():
     #todo: initilize models with batch size params
     #load data,
