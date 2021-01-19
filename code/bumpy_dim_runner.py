@@ -167,9 +167,9 @@ def main():
     batch_size=10
     genFilePath=""
     discFilePath=""
-    ModelPath="/home/gregory_barboy/BumpyDimPlus/HalfwayModels"
-    genPath ='/home/gregory_barboy/BumpyDimPlus/HalfwayModels/gen_training_checkpoints'
-    discPath ='/home/gregory_barboy/BumpyDimPlus/HalfwaModels/disc_training_checkpoints'
+    ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
+    genPath ='/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints'
+    discPath ='/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints'
 
    
     generator=Generator()
