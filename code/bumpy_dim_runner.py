@@ -137,6 +137,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
+        print(images[0])
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
         poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
