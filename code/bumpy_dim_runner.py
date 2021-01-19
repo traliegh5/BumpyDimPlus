@@ -117,9 +117,10 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     
     print(advLossDisc)
+    gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
     print(totalGenLoss)
-    gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
+    
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
    
@@ -187,7 +188,7 @@ def main():
     neutr_mosh="/home/gregory_barboy/data/cmu"
     lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
     poses,shapes= load_cmu(neutr_mosh)
-    
+    #FIX THE SHUFFLE!!!!!!
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
     mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
     poses=tf.convert_to_tensor(poses,dtype=tf.float32)
