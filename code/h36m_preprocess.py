@@ -16,11 +16,13 @@ from os import mkdir
 # Human3.6M directory
 h36m_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/Human3.6M/"
 
-image_dir = os.path.join(h36m_dir, 'images/')
+# image_dir = os.path.join(h36m_dir, 'images/')
 
-# if first time running, make image directory:
-if not os.path.isdir(image_dir):
-    os.mkdir(image_dir)
+# # if first time running, make image directory:
+# if not os.path.isdir(image_dir):
+#     os.mkdir(image_dir)
+
+
 
 '''
 Why do the joint schemes not agree ???
@@ -66,14 +68,26 @@ lsp_to_h36m = {0: 3, 1: 2, 2: 1, 3: 6, 4: 7, 5: 8, 6: 27, 7: 26, 8: 25, 9: 17,
     10: 18, 11: 19, 12: 13, 13: 15}
 
 
-training_subjects=['S1']
+training_subjects=['S5']
+
+# NOTE: used subjects S1, S6
+
 # training_subjects = ['S1', 'S5', 'S6', 'S7', 'S8', 'S9', 'S11']
 test_subject =  ['S2', 'S3', 'S4']
 
-# NOTE: S10 removed due to privacy concerns
+# S10 removed from h36 due to privacy concerns
 
-chosen_sequences = ['WalkingDog 1.60457274', 'Greeting 1.55011271', 'Posing.55011271',
-        'Discussion 1.54138969', 'TakingPhoto.54138969']
+# chosen_sequences = ['WalkingDog 1.60457274', 'Greeting 1.55011271', 'Posing.55011271',
+#         'Discussion 1.54138969', 'TakingPhoto.54138969']
+
+# NOTE: NOT consistent naming scheme/actions :(
+
+# chosen_sequences = ['WalkDog 1.60457274']
+
+# chosen_sequences = ['Directions.60457274']
+
+chosen_sequences = ['Discussion 2.58860488', 'Directions.60457274']
+
 
 
 for subject in training_subjects:
@@ -85,6 +99,11 @@ for subject in training_subjects:
     np.sort(sequences)
 
     print(len(sequences))
+
+    sub_path_cr = os.path.join(h36m_dir, subject + '_cropped')
+
+    if not os.path.isdir(sub_path_cr):
+        os.mkdir(sub_path_cr)
 
     for cs in chosen_sequences:
         cs_path = os.path.join(h36m_dir, subject + '_cropped', cs)
@@ -118,8 +137,6 @@ for subject in training_subjects:
 
     print(sequences)
 
-    frame_curr = 0
-
     for seq in sequences:
         # print(seq)
         seq_name = seq.split('/')[-1]
@@ -148,19 +165,31 @@ for subject in training_subjects:
         poses = cdflib.CDF(seq)['Pose'][0]
         # print('poses:', poses)
         poses = np.array(poses)
-        # print('poses shape:', np.shape(poses))
+        print('poses shape:', np.shape(poses))
 
         vid_cap = cv2.VideoCapture(os.path.join(video_path, video_file))
 
         all_frames = np.shape(poses)[0]
-        # print('all frames:', all_frames)
+        print('all frames:', all_frames)
+
 
         for fr in range(all_frames):
 
+            # cont, frame = vid_cap.read()
+
+            # while(cont):
             # print('fr:', fr)
+
+            frame_curr = 0
 
             while(True):
                 cont, frame = vid_cap.read()
+
+                print(cont)
+                
+                # this is a cheeky little workaround--unclear why cont is not changing
+                if frame_curr == all_frames:
+                    break
 
                 if cont:
                     # cv2.imshow('frame', frame)
@@ -309,7 +338,7 @@ for subject in training_subjects:
                         # images.append(img_name)
                         # joints.append(lsp_annots)
 
-                    frame_curr += 1
+                        frame_curr += 1
 
                 else:
                     break
