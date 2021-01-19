@@ -144,7 +144,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=self.poseD2(allPoseDisc)
         #print("allPoseDisc after D2:",allPoseDisc)
         allPoseDisc=self.poseOut(allPoseDisc)
-        print("allPoseDisc after poseOut:",allPoseDisc)
+        
         
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) """
@@ -152,9 +152,7 @@ class Discriminator(tf.keras.Model):
         allPoseDisc=tf.reshape(allPoseDisc,[-1,1])
         shapeDisc=tf.reshape(shapeDisc,[-1,1])
         discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
-        print("allPoseDisc",allPoseDisc)
-        print("allShapeDisc",shapeDisc)
-        print("discs",discs)
+        
         #Discs shape: Nx(23+1+1)
         return discs
    
