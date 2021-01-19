@@ -159,7 +159,10 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     
     return None 
 ## Obj download code Adapted from MPI Star/SMPL demo code
-def saveMesh(trans, pose, betas):
+def saveMesh(params):
+    pose=params[:,3:75]
+    shape=params[:,75:]
+    camera=params[:,:3]
     star = STAR(gender='neutral')
     m = star(pose,betas,trans)
 
@@ -212,11 +215,6 @@ def main():
     save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
     save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
     
-    if len(sys.argv) == 2:
-        im_path=sys.argv[1]
-         
-		
-
 	# Change this to "True" to turn on the attention matrix visualization.
 	# You should turn this on once you feel your code is working.
 	# Note that it is designed to work with transformers that have single attention heads.
@@ -237,8 +235,16 @@ def main():
     num_batches=None
     num_im_feats=2048
     resNet=tf.keras.applications.ResNet50V2(include_top=False,weights='imagenet', classes=num_im_feats,classifier_activation='softmax',pooling='avg')
+    
+    #Save Mesh
+    if len(sys.argv) == 2:
+        im_path=sys.argv[1]
+        image = sload_and_process_image(im_path)
+        resNet(imBatch)
+        params=generator(feats)
+        saveMesh(params)
+        sys.exit()
 
-   
     star=STAR(gender='neutral')
 
     # Load Joint annotations
