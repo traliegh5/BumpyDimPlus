@@ -120,7 +120,7 @@ class Discriminator(tf.keras.Model):
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
-
+        poses=tf.reshape(poses,[-1,24,9])
         poseEmb=self.pE1(poses)
         poseEmb=self.pE2(poseEmb)
         print(tf.shape(poseEmb))
