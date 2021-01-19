@@ -29,6 +29,8 @@ def main():
     folder = argv[0] + '_cropped/' + argv[1]
 
     if not os.path.isdir(folder):
+        os.mkdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/')
+    if not os.path.isdir(folder):
         os.mkdir('/home/gregory_barboy/data/' + folder)
     num_images = argv[2]
     for i in range(num_images):
