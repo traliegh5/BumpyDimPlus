@@ -67,9 +67,8 @@ class Generator(tf.keras.Model):
         curr_est=self.init_param_est(batch_size)
         for i in range(self.num_iterations):
             curr_est=self.IEF(features,curr_est)
-        
+
         return curr_est
-    
 
 class Discriminator(tf.keras.Model):
     def __init__(self):
@@ -97,7 +96,7 @@ class Discriminator(tf.keras.Model):
         #individual joint discriminators
         temp=[]
         for i in range(self.num_joints):
-            temp.append(tf.keras.layers.Dense(1,activation='softmax'))
+            temp.append(tf.keras.layers.Dense(1,activation=None))
         self.jointDiscList=temp
 
 
@@ -106,6 +105,7 @@ class Discriminator(tf.keras.Model):
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
         self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
+        print("THIS is the LAYER:",self.poseOut)
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
     def call(self,poses,shape):
@@ -116,15 +116,14 @@ class Discriminator(tf.keras.Model):
         shape:  N x 10
         
         """
-        
-        print(tf.shape(poses),tf.shape(shape))
+
+        print("THIS is the LAYER:",self.poseOut.get_weights())
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
         
         poseEmb=self.pE1(poses)
         poseEmb=self.pE2(poseEmb)
-        print(tf.shape(poseEmb))
         poseDisc=[]
         for i in range(self.num_joints):
             #print(poseEmb[:,i,:,:])
@@ -132,16 +131,29 @@ class Discriminator(tf.keras.Model):
             #print(tf.shape(temp))
             poseDisc.append(temp)
         #print(tf.shape(poseDisc))
+        #print("poseDisc:",poseDisc)
         poseDisc=tf.squeeze(tf.stack(poseDisc,axis=1))
+        #print("poseDisc:",poseDisc)
         #print(tf.shape(poseDisc))
+        #print("poseEmb pre flatten:",poseEmb)
         poseEmb=self.flatten(poseEmb)
+        #print("poseEmb pose flatten:",poseEmb)
         allPoseDisc=self.poseD1(poseEmb)
+        #print("allPoseDisc after D1:",allPoseDisc)
         allPoseDisc=self.poseD2(allPoseDisc)
+        #print("allPoseDisc after D2:",allPoseDisc)
         allPoseDisc=self.poseOut(allPoseDisc)
+        #print("allPoseDisc after poseOut:",allPoseDisc)
         
         """ONce we have a tensor containing the disc output of each joint,
         we can concatenate the disc outptus (K*32 in total) """
-        discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],0)
+        
+        allPoseDisc=tf.reshape(allPoseDisc,[-1,1])
+        shapeDisc=tf.reshape(shapeDisc,[-1,1])
+        discs=tf.concat([poseDisc,allPoseDisc,shapeDisc],1)
+        print("allPoseDisc",allPoseDisc)
+        print("allShapeDisc",shapeDisc)
+        print("discs",discs)
         #Discs shape: Nx(23+1+1)
         return discs
    

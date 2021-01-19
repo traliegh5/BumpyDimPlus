@@ -41,7 +41,7 @@ def discLoss(disReal,disFake):
     fakeLoss=tf.reduce_mean(tf.reduce_sum(fakeL,axis=1))
     realLoss=tf.reduce_mean(tf.reduce_sum(realL,axis=1))
     
-    return fakeLoss+realLoss
+    return tf.add(fakeLoss,realLoss)
 
 def genLoss(disFake):
     """input: Nx(23+1+1)
@@ -65,7 +65,7 @@ def texture_loss():
 
 def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
-    with tf.GradientTape() as tape:
+    with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
         pose=params[:,3:75]
         shape=params[:,75:]
@@ -75,10 +75,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         joints= joint_out
         
         J_lsp=lsp_STAR(joints)
+        keypoints = None
         if not texture:
             keypoints=orth_project(J_lsp,camera)
-
-
 
         #19joints=reduceJoints(joints)
         #keypoints=project(19joints,camera)
@@ -94,7 +93,15 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         realPose=tf.reshape(realPose,[-1,23,1,9])
         
         realDisc=discriminator(realPose,realShape)
+        
+        pose=tf.reshape(pose, [-1, 24, 3])
+        pose=tf_rodrigues(pose)
+        pose=pose[:,1:,:,:]
+        pose=tf.reshape(pose,[-1,23,1,9])
+        
         fakeDisc=discriminator(pose,shape)
+        print(fakeDisc)
+        print(realDisc)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
         if not texture:
@@ -108,9 +115,12 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
             totalGenLoss=tf.concat([advLossGen,repLoss],0)
-        totalGenLoss=tf.math.reduce_sum(totalGenLoss)
-    gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
-    gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
+            totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+    
+    print(advLossDisc)
+    gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
+    print(totalGenLoss)
+    gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
    
@@ -138,7 +148,6 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         
         priorBatch=[poseBatch,shapeBatch]
         feats=resNet(imBatch)
-        
         train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
