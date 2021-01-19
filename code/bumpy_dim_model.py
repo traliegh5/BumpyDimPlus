@@ -105,7 +105,7 @@ class Discriminator(tf.keras.Model):
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
         self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
-        print("THIS is the LAYER:",self.poseOut)
+        
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
     def call(self,poses,shape):
@@ -118,6 +118,8 @@ class Discriminator(tf.keras.Model):
         """
 
         print("THIS is the LAYER:",self.poseOut.get_weights())
+        print("this is the d1 layer",self.poseD1.get_weights())
+        print("this our other dense one layer:",self.shapeOut.get_weights())
         shapeDisc=self.shapeD1(shape)
         shapeDisc=self.shapeD2(shapeDisc)
         shapeDisc=self.shapeOut(shapeDisc)
