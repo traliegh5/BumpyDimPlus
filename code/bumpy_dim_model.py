@@ -104,7 +104,7 @@ class Discriminator(tf.keras.Model):
         self.flatten=tf.keras.layers.Flatten(data_format="channels_last")
         self.poseD1=tf.keras.layers.Dense(1024,activation='relu')
         self.poseD2=tf.keras.layers.Dense(1024,activation='relu')
-        self.poseOut=tf.keras.layers.Dense(1,activation='softmax')
+        self.poseOut=tf.keras.layers.Dense(1,activation='relu')
         #TODO Initialize Hyperparameters, linear layers, etc
         #initialize all discriminators, for 
     def call(self,poses,shape):
