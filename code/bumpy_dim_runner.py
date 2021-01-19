@@ -168,8 +168,7 @@ def saveMesh(params):
 
     outmesh_path = './test_smpl.obj'
     with open( outmesh_path, 'w') as fp:
-        for v in m[0]:
-            print(m[0])
+        for v in m[0][0]:
             print(v)
             fp.write( 'v %f %f %f\n' % ( v[0], v[1], v[2]) )
 
