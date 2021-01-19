@@ -203,7 +203,7 @@ def main():
         # discCheck.restore(save_disc)
 
 
-    epochs=1
+    epochs=500
     
     num_batches=None
     num_im_feats=2048
