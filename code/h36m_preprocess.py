@@ -125,8 +125,8 @@ for subject in training_subjects:
         seq_name = seq.split('/')[-1]
         # bbox_file = seq_name.replace('.cdf', '.mat')
         video_file = seq_name.replace('.cdf', '.mp4')
-        action, camera, _ = seq_name.split('.')
-        action = action.replace(' ', '_')
+        # action, camera, _ = seq_name.split('.')
+        # action = action.replace(' ', '_')
         # print('seq:', seq_name)
 
         # print(action, camera)
