@@ -65,7 +65,7 @@ def texture_loss():
 
 def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
-    with tf.GradientTape() as genTape,tf.GradientTape as discTape:
+    with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
         pose=params[:,3:75]
         shape=params[:,75:]
