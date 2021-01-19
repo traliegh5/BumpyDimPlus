@@ -1,5 +1,7 @@
 import os
 import tensorflow as tf
+tf.config.experimental_run_functions_eagerly(True)
+
 import numpy as np
 import random
 import math

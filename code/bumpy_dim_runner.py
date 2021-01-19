@@ -2,6 +2,8 @@ import sys, os
 import shutil
 import h5py
 import tensorflow as tf
+tf.config.experimental_run_functions_eagerly(True)
+
 import numpy as np
 import random
 import math
@@ -201,6 +203,11 @@ def main():
     shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
     
     shapes=tf.reshape(shapes,[-1,10])
+    moshSize=tf.shape(shapes)[0]
+    inders=tf.random.shuffle(range(moshSize))
+    poses=tf.gather(poses,inders,axis=0)
+    shapes=tf.gather(shapes,inders,axis=0)
+
 
     mpii_batch_size=100
     lsp_batch_size=100
