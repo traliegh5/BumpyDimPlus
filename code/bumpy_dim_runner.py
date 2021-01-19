@@ -103,6 +103,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         fakeDisc=discriminator(pose,shape)
         advLossGen=genLoss(fakeDisc)
         advLossDisc=discLoss(realDisc,fakeDisc)
+        print(tf.shape(advLossDisc)
         if not texture:
             repLoss=reprojLoss(labelBatch,keypoints)
 
@@ -115,6 +116,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         else:
             totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+    
     gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
     gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
