@@ -125,8 +125,9 @@ class Discriminator(tf.keras.Model):
         #print(tf.shape(poseEmb))
         poseDisc=[]
         for i in range(self.num_joints):
+            print(poseEmb[:,i,:,:])
             temp=self.jointDiscList[i](poseEmb[:,i,:,:])
-            print(tf.shape(temp))
+            #print(tf.shape(temp))
             poseDisc.append(temp)
         #print(tf.shape(poseDisc))
         poseDisc=tf.squeeze(tf.stack(poseDisc,axis=1))
