@@ -25,12 +25,13 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
  
 def main():
+    argv['S7', 'Discussion 1.54138969', 5414]
     if len(sys.argv) == 4:
-        folder = sys.argv[1] + '_cropped/' + sys.argv[2] + '/'
+        folder = argv[1] + '_cropped/' + argv[2] + '/'
 
         if not os.path.isdir(folder):
             os.mkdir('/home/gregory_barboy/data/' + folder)
-        num_images = int(sys.argv[3])
+        num_images = argv[3]
         for i in range(num_images):
             in_file = folder + f'{i:05}' + '.png'
             out_file = '/home/gregory_barboy/data/' + folder + f'{i:05}' + '.png'
