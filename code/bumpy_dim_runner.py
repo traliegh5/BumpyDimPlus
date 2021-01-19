@@ -240,7 +240,7 @@ def main():
     if len(sys.argv) == 2:
         im_path=sys.argv[1]
         image = load_and_process_image(im_path)
-        image = tf.reshape([1,224,224,3])
+        image = tf.reshape(image, [1,224,224,3])
         feats=resNet(image)
         params=generator(feats)
         saveMesh(params)
