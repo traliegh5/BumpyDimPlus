@@ -25,7 +25,7 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
  
 def main():
-    argv['S7', 'Discussion 1.54138969', 5414]
+    argv = ['S7', 'Discussion 1.54138969', 5415]
     if len(sys.argv) == 4:
         folder = argv[1] + '_cropped/' + argv[2] + '/'
 
