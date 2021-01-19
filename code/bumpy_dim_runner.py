@@ -18,18 +18,18 @@ def reprojLoss(keys,predKeys):
     """keys: N x K x 3
       predKeys: N x K x 2
       """
-    print("keys:",keys)
-    print("predkeys:",predKeys)
+    print("keys:",tf.reduce_sum(keys))
+    print("predkeys:",tf.reduce_sum(predKeys))
     keys=tf.reshape(keys,(-1,3))
     predKeys=tf.reshape(predKeys,(-1,2))  
     visMask=keys[:,2]
     print("visMask",visMask)
     dif=tf.math.subtract(keys[:,:2],predKeys)
-    print("dif:",dif)
+    print("dif:",tf.reduce_sum(dif))
     absDif=tf.math.abs(dif)
-    print("absdif",absDif)
+    print("absdif",tf.reduce_sum(absDif))
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    print("maskAbsDif",maskAbsDif)
+    print("maskAbsDif",tf.reduce_sum(maskAbsDif))
     finloss=tf.reduce_sum(maskAbsDif)
     print("finloss",finloss)
     return finloss
