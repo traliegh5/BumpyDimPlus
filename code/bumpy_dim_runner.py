@@ -169,7 +169,7 @@ def main():
     discFilePath=""
     ModelPath="/home/gregory_barboy/BumpyDimPlus/HalfwayModels"
     genPath ='/home/gregory_barboy/BumpyDimPlus/HalfwayModels/gen_training_checkpoints'
-    discPath ='/home/gregory_barboy/BumpyDimPlus/HalfwayModels/disc_training_checkpoints'
+    discPath ='/home/gregory_barboy/BumpyDimPlus/HalfwaModels/disc_training_checkpoints'
 
    
     generator=Generator()
