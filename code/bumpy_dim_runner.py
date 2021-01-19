@@ -113,8 +113,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             texLoss=texture_loss()
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
-            totalGenLoss=tf.concat([advLossGen,repLoss],0)
-            totalGenLoss=tf.math.reduce_sum(totalGenLoss)
+            totalGenLoss=advLossGen
+            # totalGenLoss=tf.concat([advLossGen,repLoss],0)
+            # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     
     print(advLossDisc)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
