@@ -270,13 +270,12 @@ def main():
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
-        genCheck.step.assign_add(1)
-        discCheck.step.assign_add(1)
-        if int(genCheck.step)%10==0:
+        
+        if epoch_num%10==0:
             genSavePath=genMan.save()
             discSavePath=discMan.save()
-            print("Saved checkpoint for step {}: {}".format(int(genCheck.step), genSavePath))
-            print("Saved checkpoint for step {}: {}".format(int(discCheck.step), discSavePath))
+            print("Saved checkpoint for step {}: {}".format(epoch_num, genSavePath))
+            print("Saved checkpoint for step {}: {}".format(epoch_num, discSavePath))
             
         # save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
         # save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
