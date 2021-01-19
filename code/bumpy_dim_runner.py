@@ -2,6 +2,8 @@ import sys, os
 import shutil
 import h5py
 import tensorflow as tf
+tf.config.experimental_run_functions_eagerly(True)
+
 import numpy as np
 import random
 import math
@@ -25,7 +27,7 @@ def reprojLoss(keys,predKeys):
     dif=tf.math.subtract(keys[:,:2],predKeys)
     absDif=tf.math.abs(dif)
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    finloss=tf.reduce_sum(maskAbsDif)
+    finloss=tf.reduce_mean(maskAbsDif)
     return finloss
 
 def discLoss(disReal,disFake):
@@ -114,7 +116,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.concat([advLossGen,texLoss],0)
         else:
             totalGenLoss=advLossGen
-            totalGenLoss=advLossGen + repLoss
+            totalGenLoss= 0.5 * advLossGen + 0.3 * repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
@@ -133,8 +135,6 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
     tf.cast(shapes,tf.float32)
     
     for i, batch in enumerate(images):
-        if i % 10 == 0:
-            print("ON Batch: ", i)
         batch_size=tf.shape(batch)[0]
         indies=tf.random.shuffle(range(batch_size))
         poseBatch=tf.gather(poses[i:i+batch_size,:],indies,axis=0)
@@ -165,15 +165,45 @@ def main():
     batch_size=10
     genFilePath=""
     discFilePath=""
-    if len(sys.argv)!=2:
-        generator=Generator()
-        discriminator=Discriminator()
-    elif sys.argv[1]=="Load":
-        generator=tf.keras.models.load_model(genFilePath)
-        discriminator=tf.keras.models.load_model(discFilePath)
+    ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
+    genPath ='/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints'
+    discPath ='/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints'
+
+   
+    generator=Generator()
+    discriminator=Discriminator()
+    generator(tf.random.uniform([10,2048]))
+    discriminator(tf.random.uniform([10,23,1,9]),tf.random.uniform([10,10]))
+    
+    genCheck=tf.train.Checkpoint(generator)
+    discCheck=tf.train.Checkpoint(discriminator)
+    genMan=tf.train.CheckpointManager(genCheck,genPath,max_to_keep=3)
+    discMan=tf.train.CheckpointManager(discCheck,discPath,max_to_keep=3)
+    genCheck.restore(genMan.latest_checkpoint)
+    discCheck.restore(discMan.latest_checkpoint)
+    if genMan.latest_checkpoint:
+        print("Restored generator from {}".format(genMan.latest_checkpoint))
+    else:
+        print("Initializing generator from scratch.")
+    if discMan.latest_checkpoint:
+        print("Restored discriminator from {}".format(discMan.latest_checkpoint))
+    else:
+        print("Initializing discriminator from scratch.")    
+    save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
+    save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
+
+        # tf.saved_model.save(generator,ModelPath)
+        # tf.saved_model.save(discriminator,ModelPath)
+        # generator.save("my_Gen")
+        # discriminator.save("my_Disc")
+    
+        # genCheck.read(genPath, options=options)
+        # discCheck.read()
+        # genCheck.restore(save_gen)
+        # discCheck.restore(save_disc)
 
 
-    epochs=1
+    epochs=500
     
     num_batches=None
     num_im_feats=2048
@@ -197,6 +227,11 @@ def main():
     shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
     
     shapes=tf.reshape(shapes,[-1,10])
+    moshSize=tf.shape(shapes)[0]
+    inders=tf.random.shuffle(range(moshSize))
+    poses=tf.gather(poses,inders,axis=0)
+    shapes=tf.gather(shapes,inders,axis=0)
+
 
     mpii_batch_size=100
     lsp_batch_size=100
@@ -233,6 +268,15 @@ def main():
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
+        
+        if epoch_num%10==0:
+            genSavePath=genMan.save()
+            discSavePath=discMan.save()
+            print("Saved checkpoint for step {}: {}".format(epoch_num, genSavePath))
+            print("Saved checkpoint for step {}: {}".format(epoch_num, discSavePath))
+            
+        # save_gen=genCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/gen_training_checkpoints')
+        # save_disc=discCheck.save('/home/gregory_barboy/BumpyDimPlus/Models/disc_training_checkpoints')
         #  for i, batch in enumerate(lsp_ds):
 
         # for i, batch in enumerate(mpii_ds):
@@ -266,9 +310,9 @@ def main():
         
         
        
-
-        generator.save('my_Gen')
-        discriminator.save('my_Disc')
+        
+        # generator.save('my_Gen')
+        # discriminator.save('my_Disc')
         # genSavePath=os.path.join(ModelPath,"generator/1/")
         # discSavePath=os.path.join(ModelPath,"discriminator/1/")
         # tf.keras.models.save_model(generator,genSavePath,save_format='tf')

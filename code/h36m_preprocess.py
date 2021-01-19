@@ -14,8 +14,8 @@ from os import mkdir
 
 
 # Human3.6M directory
-h36m_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/Human3.6M/"
-
+# h36m_dir = "/Users/annaswanson/Desktop/Deep Learning/Final Project/Data/Human3.6M/"
+h36m_dir = "D:\\Brown\\Senior\\CSCI_1470\\FINAL\\h36"
 # image_dir = os.path.join(h36m_dir, 'images/')
 
 # # if first time running, make image directory:
@@ -68,7 +68,7 @@ lsp_to_h36m = {0: 3, 1: 2, 2: 1, 3: 6, 4: 7, 5: 8, 6: 27, 7: 26, 8: 25, 9: 17,
     10: 18, 11: 19, 12: 13, 13: 15}
 
 
-training_subjects=['S5']
+training_subjects=['S9']
 
 # NOTE: used subjects S1, S6
 
@@ -77,8 +77,9 @@ test_subject =  ['S2', 'S3', 'S4']
 
 # S10 removed from h36 due to privacy concerns
 
-# chosen_sequences = ['WalkingDog 1.60457274', 'Greeting 1.55011271', 'Posing.55011271',
-#         'Discussion 1.54138969', 'TakingPhoto.54138969']
+chosen_sequences = ['WalkDog 1.60457274', #'Greeting 1.55011271', 'Posing.55011271',
+         #'Discussion 1.54138969', 
+         'Photo.54138969']
 
 # NOTE: NOT consistent naming scheme/actions :(
 
@@ -139,7 +140,7 @@ for subject in training_subjects:
 
     for seq in sequences:
         # print(seq)
-        seq_name = seq.split('/')[-1]
+        seq_name = seq.split('\\')[-1]
         # bbox_file = seq_name.replace('.cdf', '.mat')
         video_file = seq_name.replace('.cdf', '.mp4')
         # action, camera, _ = seq_name.split('.')
@@ -158,6 +159,7 @@ for subject in training_subjects:
 
         act = cs[:(len(cs) - 4)]
 
+        print("ACT: ", act)
         if act not in chosen_sequences:
             continue
 
@@ -199,7 +201,7 @@ for subject in training_subjects:
 
                     if fr % 5 == 0:
                         padded_img = np.pad(frame, ((pad,pad), (pad,pad), (0,0)), mode='constant', constant_values=(0,0))
-                        imgplot = plt.imshow(padded_img)
+                        # imgplot = plt.imshow(padded_img)
 
                         annots = poses[frame_curr]
 
