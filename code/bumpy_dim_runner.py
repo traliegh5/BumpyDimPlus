@@ -65,7 +65,7 @@ def texture_loss():
 
 def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
     
-    with tf.GradientTape() as tape:
+    with tf.GradientTape() as genTape,tf.GradientTape as discTape:
         params=generator(feats)
         pose=params[:,3:75]
         shape=params[:,75:]
@@ -117,8 +117,8 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=tf.concat([advLossGen,repLoss],0)
         totalGenLoss=tf.math.reduce_sum(totalGenLoss)
     
-    gradDisc=tape.gradient(advLossDisc,discriminator.trainable_variables)
-    gradGen=tape.gradient(totalGenLoss,generator.trainable_variables)
+    gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
+    gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     generator.optimizer.apply_gradients(zip(gradGen,generator.trainable_variables)) 
     discriminator.optimizer.apply_gradients(zip(gradDisc,discriminator.trainable_variables))    
    
