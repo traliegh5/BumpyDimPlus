@@ -239,7 +239,7 @@ def main():
     #Save Mesh
     if len(sys.argv) == 2:
         im_path=sys.argv[1]
-        image = sload_and_process_image(im_path)
+        image = load_and_process_image(im_path)
         resNet(imBatch)
         params=generator(feats)
         saveMesh(params)
