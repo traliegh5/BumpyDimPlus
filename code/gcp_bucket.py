@@ -25,10 +25,16 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
  
 def main():
-    #for i in range(16507):
-        #in_file =  'images/' + f'{i:05}' + '.png'
-        #out_file = '/home/data/' + f'{i:05}' + '.png'
-    download_blob('lsp_renum', 'joints.txt', 'lsp_joints.txt')
-    download_blob('mpii_renum', 'joints.txt', 'mpii_joints.txt')
+    if len(sys.argv) == 4:
+        folder = sys.argv[1] + '_cropped/' + sys.argv[2] + '/'
+
+        if not os.path.isdir(folder):
+            os.mkdir('/home/gregory_barboy/data/' + folder)
+        num_images = int(sys.argv[3])
+        for i in range(num_images):
+            in_file = folder + f'{i:05}' + '.png'
+            out_file = '/home/data/' + folder + f'{i:05}' + '.png'
+            download_blob('h36m_processed', in_file, out_file)
+        download_blob('h36m_processed', 'joints.txt', 'joints.txt')
 if __name__ == '__main__':
     main()

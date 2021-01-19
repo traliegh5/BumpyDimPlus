@@ -18,4 +18,5 @@ m = star(pose,betas,trans)
 bary_map = tf.convert_to_tensor(np.array(uv), dtype=tf.float32)
 out_img = map(m[0], tf.convert_to_tensor(star.f, dtype=tf.int32), bary_map, image, trans)
 
+np.array(uv)
 tex_map = np.zeros((1024,1024,3))
