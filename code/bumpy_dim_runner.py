@@ -5,6 +5,7 @@ import tensorflow as tf
 import numpy as np
 import random
 import math
+import time
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
 sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
@@ -18,20 +19,13 @@ def reprojLoss(keys,predKeys):
     """keys: N x K x 3
       predKeys: N x K x 2
       """
-    print("keys:",tf.reduce_sum(keys))
-    print("predkeys:",tf.reduce_sum(predKeys))
     keys=tf.reshape(keys,(-1,3))
     predKeys=tf.reshape(predKeys,(-1,2))  
     visMask=keys[:,2]
-    print("visMask",visMask)
     dif=tf.math.subtract(keys[:,:2],predKeys)
-    print("dif:",tf.reduce_sum(dif))
     absDif=tf.math.abs(dif)
-    print("absdif",tf.reduce_sum(absDif))
     maskAbsDif=tf.boolean_mask(absDif,visMask)
-    print("maskAbsDif",tf.reduce_sum(maskAbsDif))
     finloss=tf.reduce_sum(maskAbsDif)
-    print("finloss",finloss)
     return finloss
 
 def discLoss(disReal,disFake):
@@ -122,8 +116,9 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
             totalGenLoss=advLossGen
             totalGenLoss=advLossGen + repLoss
             # totalGenLoss=tf.math.reduce_sum(totalGenLoss)
-    
-    
+
+    print("GEN LOSS: ", totalGenLoss)
+    print("ADV LOSS: ", advLossDisc)
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
     gradDisc=discTape.gradient(advLossDisc,discriminator.trainable_variables)
     
@@ -235,8 +230,11 @@ def main():
 
     
     for epoch_num in range(epochs):
+        start = time.time()
         runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        end = time.time()
+        print("Epoch took %s minutes. nice!" %((end - start)/60.0))
 
         #  for i, batch in enumerate(lsp_ds):
 
