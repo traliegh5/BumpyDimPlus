@@ -168,6 +168,10 @@ def main():
     if len(sys.argv)!=2:
         generator=Generator()
         discriminator=Discriminator()
+        generator(tf.random.uniform([10,2048]))
+        discriminator(tf.random.uniform([10,23,1,9]),tf.random.uniform([10,10]))
+        generator.save("my_Gen")
+        discriminator.save("my_Disc")
     elif sys.argv[1]=="Load":
         generator=tf.keras.models.load_model(genFilePath)
         discriminator=tf.keras.models.load_model(discFilePath)
