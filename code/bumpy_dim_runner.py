@@ -41,7 +41,7 @@ def discLoss(disReal,disFake):
     fakeLoss=tf.reduce_mean(tf.reduce_sum(fakeL,axis=1))
     realLoss=tf.reduce_mean(tf.reduce_sum(realL,axis=1))
     
-    return tf.add(fakeLoss,realLoss
+    return tf.add(fakeLoss,realLoss)
 
 def genLoss(disFake):
     """input: Nx(23+1+1)
