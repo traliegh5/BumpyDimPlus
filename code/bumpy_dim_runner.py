@@ -240,7 +240,7 @@ def main():
     if len(sys.argv) == 2:
         im_path=sys.argv[1]
         image = load_and_process_image(im_path)
-        resNet(imBatch)
+        feats=resNet(image)
         params=generator(feats)
         saveMesh(params)
         sys.exit()
