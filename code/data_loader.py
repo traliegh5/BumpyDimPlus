@@ -14,18 +14,30 @@ def load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions):
         h36_joints.append(action_joints)
     return lsp_joints, mpii_joints, h36_joints
 
-def read_joints(dir):
+def read_joints(dir, h36):
     f = open(dir + '/joints.txt', "r")
     contents = f.readlines()
     num_imgs = int(len(contents)/14)
     annots = np.zeros((num_imgs, 14, 3))
 
-    for i in range(num_imgs):
-        for j in range(14):
-            string = contents[i * 14 + j]
-            split_str = np.array(string.split())
-            split_str = split_str.astype(np.float)
-            annots[i][j] = split_str
+    if not h36:
+        for i in range(num_imgs):
+            for j in range(14):
+                string = contents[i * 14 + j]
+                split_str = np.array(string.split())
+                split_str = split_str.astype(np.float)
+                annots[i][j] = split_str
+    else:
+        for i in range(num_imgs):
+            for j in range(14):
+                string = contents[i * 14 + j]
+                out = np.zeros(3)
+                split_str = np.array(string.split())
+                split_str = split_str.astype(np.float)
+                out[0] = split_str[0]
+                out[1] = split_str[1]
+                out[2] = 1.0
+                annots[i][j] = out
     return annots
 
 def load_and_process_image(file_path):
