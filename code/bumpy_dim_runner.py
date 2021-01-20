@@ -10,6 +10,7 @@ import math
 import time
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
+from process_uv_mesh import load_obj
 sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
 sys.path.append('/home/gregory_barboy/data')
 
