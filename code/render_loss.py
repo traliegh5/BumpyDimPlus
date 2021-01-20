@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 f = open("gen_loss.txt", "r")
 contents_gen = f.readlines()
