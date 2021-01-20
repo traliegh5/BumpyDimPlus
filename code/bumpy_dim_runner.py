@@ -10,13 +10,13 @@ import math
 import time
 from utilities import orth_project,  lsp_STAR
 from bumpy_dim_model import Generator, Discriminator
-from process_uv_mesh import load_obj
 sys.path.append('/home/gregory_barboy/BumpyDimPlus/STAR/')
 sys.path.append('/home/gregory_barboy/data')
 
 from star.tf.star import STAR, tf_rodrigues
 from data_loader import load_joints, load_and_process_image,load_cmu
 import matplotlib.pyplot as plt
+from process_uv_mesh import load_obj
 
 def reprojLoss(keys,predKeys):
     """keys: N x K x 3
