@@ -10,7 +10,6 @@ def load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions):
     h36_joints = []
     for action in h36_actions:
         path = h36_dir + '/' + action
-        print("path: ", path)
         action_joints = read_joints(path)
         h36_joints.append(action_joints)
     return lsp_joints, mpii_joints, h36_joints
