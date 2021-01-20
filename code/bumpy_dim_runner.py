@@ -172,7 +172,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         
         priorBatch=[poseBatch,shapeBatch]
         feats=resNet(imBatch)
-        train(discriminator,generator,star,feats,joint_batch,priorBatch, batch, texture=False)
+        train(discriminator,generator,star,feats,joint_batch,priorBatch, batch, texture)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
         #     tf.keras.models.save_model(discriminator,runDisc)
