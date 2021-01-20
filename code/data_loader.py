@@ -3,14 +3,14 @@ import tensorflow as tf
 
 def load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions):
     # Load LSP Data
-    lsp_joints = read_joints(lsp_dir)
+    lsp_joints = read_joints(lsp_dir, False)
     # Load MPII Data
-    mpii_joints = read_joints(mpii_dir)
+    mpii_joints = read_joints(mpii_dir, False)
 
     h36_joints = []
     for action in h36_actions:
         path = h36_dir + '/' + action
-        action_joints = read_joints(path)
+        action_joints = read_joints(path, True)
         h36_joints.append(action_joints)
     return lsp_joints, mpii_joints, h36_joints
 
