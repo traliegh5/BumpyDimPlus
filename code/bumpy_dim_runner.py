@@ -121,7 +121,7 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch, images, textu
         # make visibility mask 
         # input maps and mask into texture loss function
         if texture:
-            filename_bary = '/home/gregory_barboy/data/uv_bary.pkl'
+            filename_bary = '/home/gregory_barboy/data/uv_bary'
             uv = load_obj(filename_bary)
             bary_map = tf.convert_to_tensor(np.array(uv), dtype=tf.float32)
             texLoss=texture_loss(starOut, tf.convert_to_tensor(star.f, dtype=tf.int32), bary_map, images, camera)
