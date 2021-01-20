@@ -25,7 +25,7 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
  
 def main():
-    argv = ['S7', 'Discussion 1.54138969', 5415]
+    argv = ['S7', 'Greeting 1.55011271', 2215]
     folder = argv[0] + '_cropped/' + argv[1]
 
     if not os.path.isdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/'):
@@ -33,10 +33,11 @@ def main():
     if not os.path.isdir('/home/gregory_barboy/data/' + folder + '/'):
         os.mkdir('/home/gregory_barboy/data/' + folder)
     num_images = argv[2]
-    # for i in range(num_images):
-    #     in_file = folder + '/' + f'{i:05}' + '.png'
-    #     out_file = '/home/gregory_barboy/data/' + folder + '/' + f'{i:05}' + '.png'
-    #     download_blob('h36m_processed', in_file, out_file)
+    
+    for i in range(num_images):
+        in_file = folder + '/' + f'{i:05}' + '.png'
+        out_file = '/home/gregory_barboy/data/' + folder + '/' + f'{i:05}' + '.png'
+        download_blob('h36m_processed', in_file, out_file)
     download_blob('h36m_processed', folder + '/' + 'joints.txt', '/home/gregory_barboy/data/' + folder + '/' + 'joints.txt')
 if __name__ == '__main__':
     main()
