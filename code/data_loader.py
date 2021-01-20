@@ -1,12 +1,18 @@
 import numpy as np
 import tensorflow as tf
 
-def load_joints(lsp_dir, mpii_dir, h36_dir):
+def load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions):
     # Load LSP Data
     lsp_joints = read_joints(lsp_dir)
     # Load MPII Data
     mpii_joints = read_joints(mpii_dir)
-    return lsp_joints, mpii_joints
+
+    h36_joints = []
+    for action in h36_actions:
+        path = h36_dir + '/' + action
+        action_joints = read_joints(path)
+        h36_joints.append(action_joints)
+    return lsp_joints, mpii_joints, h36_joints
 
 def read_joints(dir):
     f = open(dir + '/joints.txt', "r")

@@ -56,16 +56,24 @@ def genLoss(disFake):
     
     return fakeLoss
 
-def texture_loss():
+def texture_loss(star_verts, star_faces, bary_map, images, camera):
     """map function is in utilities, necessary for making texture maps. We can have this take in a batch of images,
     and have one batch be comprised of images that have consistant texture (ie videos or consecutive images)
     
     """
+    # N x bary_map[0] x 3
+    batch_maps = map(star_verts, star_faces, bary_map, images, camera)
 
-    
-    return None 
+    num_maps = tf.shape(bach_maps)[0]
+    if (num_maps % 2 == 0):
+        num_maps = num_maps - 1
+        batch_maps = tf.gather(batch_maps, tf.range(num_maps - 1))
+    batch_maps = tf.reshape(batch_maps, [num_maps/2, 2, -1, 3])
+    loss = tf.math.abs(batch_maps[:,0] - batch_maps[:,1])
+    loss = tf.math.reduce_mean(loss)
+    return loss
 
-def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
+def train(discriminator,generator,star,feats,labelBatch,meshBatch, images, texture):
     
     with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
@@ -112,8 +120,11 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
         # make visibility mask 
         # input maps and mask into texture loss function
         if texture:
-            texLoss=texture_loss()
-            totalGenLoss=tf.concat([advLossGen,texLoss],0)
+            filename_bary = '/home/gregory_barboy/data/uv_bary.pkl'
+            uv = load_obj(filename_bary)
+            bary_map = tf.convert_to_tensor(np.array(uv), dtype=tf.float32)
+            texLoss=texture_loss(starOut, tf.convert_to_tensor(star.f, dtype=tf.int32), bary_map, images, camera)
+            totalGenLoss= 0.5 * advLossGen + 0.3 * repLoss + 0.2 * texLoss
         else:
             totalGenLoss=advLossGen
             totalGenLoss= 0.5 * advLossGen + 0.3 * repLoss
@@ -161,7 +172,7 @@ def runOnSet(images,joints,poses,shapes,discriminator,generator,star,resNet,text
         
         priorBatch=[poseBatch,shapeBatch]
         feats=resNet(imBatch)
-        train(discriminator,generator,star,feats,joint_batch,priorBatch,texture=False)
+        train(discriminator,generator,star,feats,joint_batch,priorBatch, batch, texture=False)
         # if i==batch_size:
         #     tf.keras.models.save_model(generator,runGen)
         #     tf.keras.models.save_model(discriminator,runDisc)
@@ -261,13 +272,17 @@ def main():
     lsp_dir = "/home/gregory_barboy/data/lsp_images"
     mpii_dir = "/home/gregory_barboy/data/mpii_images"
     #"D://Brown//Senior//CSCI_1470//FINAL//MPII//cropped_mpii"
-    h36_dir = ""
+    h36_dir = "/home/gregory_barboy/data/S7_cropped"
+    h36_actions = ['Discussion 1.54138969'  'Greeting 1.55011271'  'Photo.54138969 Posing.55011271'   'WalkDog 1.60457274']
     neutr_mosh="/home/gregory_barboy/data/cmu"
-    lsp_joints, mpii_joints = load_joints(lsp_dir, mpii_dir, h36_dir)
+    lsp_joints, mpii_joints h36_joints = load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions)
     poses,shapes= load_cmu(neutr_mosh)
     #FIX THE SHUFFLE!!!!!!
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
     mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
+
+    for joint_list in h36_joints:
+        joint_list = tf.convert_to_tensor(joint_list, dtype=tf.float32)
     poses=tf.convert_to_tensor(poses,dtype=tf.float32)
     shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
     
@@ -300,17 +315,32 @@ def main():
     dataset = dataset.map(map_func=load_and_process_image)
     dataset = dataset.batch(mpii_batch_size)
     mpii_ds = dataset
+
+    #import h36 S7
+    h36_datasets = []
+    for action in h36_actions:
+        dir_path = h36_dir + '/' + action + '/*.png'
+        dataset = tf.data.Dataset.list_files(dir_path, shuffle=False)
+        dataset = dataset.map(map_func=load_and_process_image)
+        dataset = dataset.batch(h36_batch_size)
+        h36_datasets.append(dataset)
     
     lsp_ds = lsp_ds.prefetch(1)
     mpii_ds = mpii_ds.prefetch(1)
+    for ds in h36_datasets:
+        ds = ds.prefetch(1)
     # Iterate over dataset
     #this is likelye not right, but eventually it should be the 
     ModelPath="/home/gregory_barboy/BumpyDimPlus/Models"
 
+    start_texture = 0
     for epoch_num in range(epochs):
         start = time.time()
-        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
-        runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        #runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        #runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        if(epoch_num > start_texture):
+            for i in range(len(h36_datasets)):
+                runOnSet(h36_datasets[i],h36_joints[i],poses,shapes,discriminator,generator,star,resNet,True)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
         
