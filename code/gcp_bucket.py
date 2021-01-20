@@ -28,7 +28,7 @@ def main():
     argv = ['S7', 'Discussion 1.54138969', 5415]
     folder = argv[0] + '_cropped/' + argv[1]
 
-    if not os.path.isdir(folder):
+    if not os.path.isdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/'):
         os.mkdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/')
     if not os.path.isdir(folder):
         os.mkdir('/home/gregory_barboy/data/' + folder)
