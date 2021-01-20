@@ -275,7 +275,7 @@ def main():
     h36_dir = "/home/gregory_barboy/data/S7_cropped"
     h36_actions = ['Discussion 1.54138969'  'Greeting 1.55011271'  'Photo.54138969 Posing.55011271'   'WalkDog 1.60457274']
     neutr_mosh="/home/gregory_barboy/data/cmu"
-    lsp_joints, mpii_joints h36_joints = load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions)
+    lsp_joints, mpii_joints, h36_joints = load_joints(lsp_dir, mpii_dir, h36_dir, h36_actions)
     poses,shapes= load_cmu(neutr_mosh)
     #FIX THE SHUFFLE!!!!!!
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
