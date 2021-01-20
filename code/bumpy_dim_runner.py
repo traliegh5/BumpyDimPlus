@@ -65,7 +65,7 @@ def texture_loss(star_verts, star_faces, bary_map, images, camera):
     # N x bary_map[0] x 3
     batch_maps = map(star_verts, star_faces, bary_map, images, camera)
 
-    num_maps = tf.shape(batch_maps)[0]
+    num_maps = bary_map.numpy().shape[0]
     if (num_maps % 2 == 0):
         num_maps = num_maps - 1
         batch_maps = tf.gather(batch_maps, tf.range(num_maps - 1))
