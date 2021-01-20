@@ -338,11 +338,13 @@ def main():
     start_texture = 0
     for epoch_num in range(epochs):
         start = time.time()
-        #runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
-        #runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
-        if(epoch_num > start_texture):
-            for i in range(len(h36_datasets)):
-                runOnSet(h36_datasets[i],h36_joints[i],poses,shapes,discriminator,generator,star,resNet,True)
+        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
+
+        # Code for running texture loss, a bit buggy
+        # if(epoch_num > start_texture):
+        #     for i in range(len(h36_datasets)):
+        #         runOnSet(h36_datasets[i],h36_joints[i],poses,shapes,discriminator,generator,star,resNet,True)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
         
