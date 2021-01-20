@@ -30,7 +30,7 @@ def main():
 
     if not os.path.isdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/'):
         os.mkdir('/home/gregory_barboy/data/' + argv[0] + '_cropped/')
-    if not os.path.isdir(folder):
+    if not os.path.isdir(folder + '/'):
         os.mkdir('/home/gregory_barboy/data/' + folder)
     num_images = argv[2]
     # for i in range(num_images):
