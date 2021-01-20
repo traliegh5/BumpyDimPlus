@@ -281,8 +281,8 @@ def main():
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
     mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
 
-    for joint_list in h36_joints:
-        joint_list = tf.convert_to_tensor(joint_list, dtype=tf.float32)
+    for i in len(h36_joints):
+        h36_joints[i] = tf.convert_to_tensor(h36_joints[i], dtype=tf.float32)
     poses=tf.convert_to_tensor(poses,dtype=tf.float32)
     shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
     
