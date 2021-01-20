@@ -295,6 +295,7 @@ def main():
 
     mpii_batch_size=100
     lsp_batch_size=100
+    h36_batch_size=100
     
     # Create Image datasets
     # Create a Dataset that contains all .png files
