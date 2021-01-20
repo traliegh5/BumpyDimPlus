@@ -71,10 +71,10 @@ def texture_loss(star_verts, star_faces, bary_map, images, camera):
     batch_maps = tf.reshape(batch_maps, [num_maps/2, 2, -1, 3])
     loss = tf.math.abs(batch_maps[:,0] - batch_maps[:,1])
     loss = tf.math.reduce_mean(loss)
+    print("Tex Loss:, ", loss)
     return loss
 
 def train(discriminator,generator,star,feats,labelBatch,meshBatch, images, texture):
-    print(labelBatch)
     with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
         pose=params[:,3:75]
@@ -281,7 +281,7 @@ def main():
     lsp_joints=tf.convert_to_tensor(lsp_joints,dtype=tf.float32)
     mpii_joints=tf.convert_to_tensor(mpii_joints,dtype=tf.float32)
 
-    for i in len(h36_joints):
+    for i in range(len(h36_joints)):
         h36_joints[i] = tf.convert_to_tensor(h36_joints[i], dtype=tf.float32)
     poses=tf.convert_to_tensor(poses,dtype=tf.float32)
     shapes=tf.convert_to_tensor(shapes,dtype=tf.float32)
