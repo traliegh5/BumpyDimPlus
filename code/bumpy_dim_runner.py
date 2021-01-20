@@ -74,7 +74,7 @@ def texture_loss(star_verts, star_faces, bary_map, images, camera):
     return loss
 
 def train(discriminator,generator,star,feats,labelBatch,meshBatch, images, texture):
-    
+    print(labelBatch)
     with tf.GradientTape() as genTape,tf.GradientTape() as discTape:
         params=generator(feats)
         pose=params[:,3:75]
