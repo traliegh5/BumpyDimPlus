@@ -121,12 +121,12 @@ def train(discriminator,generator,star,feats,labelBatch,meshBatch,texture):
 
     gen_loss_file = "gen_loss.txt"
     f = open(gen_loss_file, "a+")
-    f.write(str(totalGenLoss) +  '\n')
+    f.write(str(totalGenLoss.numpy()) +  '\n')
     f.close()
 
     dis_loss_file = "dis_loss.txt"
     f = open(dis_loss_file, "a+")
-    f.write(str(advLossDisc) +  '\n')
+    f.write(str(advLossDisc.numpy()) +  '\n')
     f.close()
 
     gradGen=genTape.gradient(totalGenLoss,generator.trainable_variables)
