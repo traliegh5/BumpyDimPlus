@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 
-f = open(image_dir + "gen_loss.txt", "r")
+f = open("gen_loss.txt", "r")
 contents_gen = f.readlines()
 f.close()
 
-f = open(image_dir + "dis_loss.txt", "r")
+f = open("dis_loss.txt", "r")
 contents_dis = f.readlines()
 f.close()
 

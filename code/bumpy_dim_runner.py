@@ -309,7 +309,7 @@ def main():
 
     for epoch_num in range(epochs):
         start = time.time()
-        # runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
+        runOnSet(mpii_ds,mpii_joints,poses,shapes,discriminator,generator,star,resNet,False)
         runOnSet(lsp_ds,lsp_joints,poses,shapes,discriminator,generator,star,resNet,False)
         end = time.time()
         print("Epoch: ", epoch_num," took %s minutes. nice!" %((end - start)/60.0))
